@@ -1,0 +1,462 @@
+<?php
+/**
+ * @file
+ * Install for a basic entity - need to create the base table for our entity.
+ * This table can have as many columns as you need to keep track of
+ * entity-specific data that will not be added via attached fields.
+ * The minimum information for the entity to work is an id and an entity name.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+
+function brilliant_pr_schema() {
+  $schema = array();
+
+  // The name of the table can be any name we choose. However, namespacing the
+  // table with the module name is best practice.
+  $schema['brilliant_pr_project'] = array(
+    'description' => 'The base table for our basic entity.',
+    'fields' => array(
+      'pid' => array(
+        'description' => 'Primary key of the basic entity.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'bundle_type' => array(
+        'description' => 'The bundle type',
+        'type' => 'text',
+        'size' => 'medium',
+        'not null' => TRUE
+      ),
+      'title' => array(
+        'description' => 'A description of the item',
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'description' => array(
+        'description' => 'Project description',
+        'type' => 'text',
+        'not null' => TRUE,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp of the entity creation time.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'changed' => array(
+        'description' => 'The Unix timestamp of the entity change time.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'uid' => array(
+        'description' => 'The {users}.uid that owns this product.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'opt_time' => array(
+        'description' => 'optimal time to complete project',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'dead_time' => array(
+        'description' => 'deadline to complete project',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'curator' => array(
+        'description' => 'Curator of project',
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'editor' => array(
+        'description' => 'Editor of project',
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'company' => array(
+        'description' => 'company title',
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'customer_name' => array(
+        'description' => 'Customer\'s name',
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'status' => array(
+        'description' => 'Boolean indicating whether the status of this task',
+        'type' => 'varchar',
+        'length' => 30,
+        'default' => '',
+      ),
+    ),
+    'primary key' => array('pid'),
+    'indexes' => array(
+      'uid' => array('uid'),
+      'opt_time' => array('opt_time'),
+      'dead_time' => array('dead_time'),
+    ),
+  );
+
+  $schema['brilliant_pr_task'] = array(
+    'description' => 'The base table for our task entity.',
+    'fields' => array(
+      'tid' => array(
+        'description' => 'Primary key of the task entity.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'bundle_type' => array(
+        'description' => 'The bundle type',
+        'type' => 'text',
+        'size' => 'medium',
+        'not null' => TRUE
+      ),
+      'title' => array(
+        'description' => 'A description of the item',
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'ref' => array(
+        'description' => 'Reference title of the basic entity.',
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'uid' => array(
+        'description' => 'The {users}.uid that owns this product.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'description' => array(
+        'description' => 'Task description',
+        'type' => 'text',
+        'not null' => TRUE,
+      ),
+      'created' => array(
+        'description' => 'The Unix timestamp of the entity creation time.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'changed' => array(
+        'description' => 'The Unix timestamp of the entity change time.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'opt_time' => array(
+        'description' => 'optimal time to complete task',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'dead_time' => array(
+        'description' => 'deadline to complete task',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'curator' => array(
+        'description' => 'Curator of task',
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'editor' => array(
+        'description' => 'Editor of task',
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'implementor' => array(
+        'description' => 'Implementor of task',
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'status' => array(
+        'description' => 'Boolean indicating whether the status of this task',
+        'type' => 'varchar',
+        'length' => 30,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+    ),
+    'primary key' => array('tid'),
+    'indexes' => array(
+      'uid' => array('uid'),
+      'opt_time' => array('opt_time'),
+      'dead_time' => array('dead_time'),
+    ),
+  );
+
+  return $schema;
+}
+
+function brilliant_pr_install() {
+  // create any roles we will be using
+  $implementor_permissions = array(
+    'view brilliant_pr_projects',
+    'view brilliant_pr_tasks',
+    'view own brilliant_pr_tasks',
+    'edit brilliant_pr_tasks',
+    'create brilliant_pr_tasks',
+    'edit own brilliant_pr_tasks',
+    'view user completed brilliant_pr_tasks',
+    //    cancel own account
+    'cancel account',
+    'change own username',
+  );
+  $curator_permissions = array(
+    'administer brilliant_pr_projects',
+    'view brilliant_pr_projects',
+    'view own brilliant_pr_projects',
+    'edit brilliant_pr_projects',
+    'create brilliant_pr_projects',
+    'remove own brilliant_pr_projects',
+    'remove brilliant_pr_projects',
+    'edit own brilliant_pr_projects',
+    'delete any brilliant_pr_projects',
+    'delete own brilliant_pr_projects',
+    'view user approved brilliant_pr_projects',
+    'view user deleted brilliant_pr_projects',
+    'view user completed brilliant_pr_projects',
+    'access site in maintenance mode',
+    'block IP addresses',
+    'administer taxonomy',
+    'edit terms in 1',
+    'delete terms in 1',
+    'restore_delete_brilliant_pr_projects',
+    'administer brilliant_pr_tasks',
+    'view brilliant_pr_tasks',
+    'view own brilliant_pr_tasks',
+    'edit brilliant_pr_tasks',
+    'create brilliant_pr_tasks',
+    'delete own brilliant_pr_tasks',
+    'remove brilliant_pr_tasks',
+    'edit own brilliant_pr_tasks',
+    'delete any brilliant_pr_tasks',
+    'restore_delete_brilliant_pr_tasks',
+    'view user completed brilliant_pr_tasks',
+    'view user approved brilliant_pr_tasks',
+    'view user deleted brilliant_pr_tasks',
+//    user administer permissions
+    'administer permissions',
+    'administer users',
+    'administer menu',
+//    view user profiles
+    'access user profiles',
+    'change own username',
+//    cancel own account
+    'cancel account',
+//    access to dashboard
+    'access dashboard',
+    'flush caches',
+  );
+  $customer_permissions = array(
+    'view brilliant_pr_projects',
+    'view own brilliant_pr_projects',
+    'edit brilliant_pr_projects',
+    'create brilliant_pr_projects',
+    'edit own brilliant_pr_projects',
+    'remove own brilliant_pr_projects',
+    'view user completed brilliant_pr_projects',
+    'view brilliant_pr_tasks',
+    'view own brilliant_pr_tasks',
+    'edit brilliant_pr_tasks',
+    'create brilliant_pr_tasks',
+    'edit own brilliant_pr_tasks',
+    'view user completed brilliant_pr_tasks',
+    //    cancel own account
+    'cancel account',
+    'change own username',
+
+  );
+//add roles
+  _add_role('implementor');
+  _add_role('curator');
+  _add_role('customer');
+//  add permissions
+  _add_permissions('implementor', $implementor_permissions);
+  _add_permissions('curator', $curator_permissions);
+  _add_permissions('customer', $customer_permissions);
+
+//  install taxonomy vocabulary
+  $company_vocab = (object) array(
+    'name' => 'Company',
+    'description' => 'Company details',
+    'machine_name' => 'brilliant_pr_company_vocab',
+  );
+
+  taxonomy_vocabulary_save($company_vocab);
+
+//  add terms for vocabulary
+  $vocab = taxonomy_vocabulary_machine_name_load('brilliant_pr_company_vocab');
+
+  $term1 = (object) array(
+    'name' => 'Brilliant Solutions LLC',
+    'description' => 'company name',
+    'vid' => $vocab->vid,
+  );
+
+  taxonomy_term_save($term1);
+
+}
+
+/**
+ *    Adds a new role
+ * @machine_name - the name of the role to be added
+ * @weight - the optional display weight for role
+ */
+
+function _add_role($machine_name, $weight = 0) {
+  $role = new stdClass();
+  $role->name = $machine_name;
+  $role->weight = $weight;
+  user_role_save($role);
+}
+
+/**
+ *    Adds permissions to a role
+ * @role_name - the name of the role to receive an update
+ * @permissions - the array of permissions to add
+ */
+
+function _add_permissions($role_name, $permissions) {
+  $role = user_role_load_by_name($role_name);
+  user_role_grant_permissions($role->rid, $permissions);
+}
+
+/**
+ * Implements hook_uninstall()
+ */
+
+function brilliant_pr_uninstall() {
+  // remove any roles we created
+  user_role_delete('implementor');
+  user_role_delete('curator');
+  user_role_delete('customer');
+  // remove any tables we created
+  variable_del('brilliant_pr_project');
+  variable_del('brilliant_pr_task');
+  $vocab = taxonomy_vocabulary_machine_name_load('brilliant_pr_company_vocab');
+  taxonomy_vocabulary_delete($vocab->vid);
+
+}
+
+
+/**
+ * Install custom fields
+ */
+function brilliant_pr_enable() {
+  // Check if our field is not already created.
+  if (!field_info_field('field_phone')) {
+    $field = array(
+      'field_name' => 'field_phone',
+      'type' => 'text',
+    );
+    field_create_field($field);
+
+    // Create the instance on the bundle.
+    $instance = array(
+      'field_name' => 'field_phone',
+      'entity_type' => 'user',
+      'label' => 'Phone number',
+      'bundle' => 'user',
+      // If you don't set the "required" property then the field wont be required by default.
+      'required' => TRUE,
+      'settings' => array(
+        // Here you inform either or not you want this field showing up on the registration form.
+        'user_register_form' => 1,
+      ),
+      'widget' => array(
+        'type' => 'textfield',
+        'weight' => '1',
+      ),
+    );
+    field_create_instance($instance);
+  }
+
+  if (!field_info_field('field_first_name')) {
+    $field = array(
+      'field_name' => 'field_first_name',
+      'type' => 'text',
+    );
+    field_create_field($field);
+
+    // Create the instance on the bundle.
+    $instance = array(
+      'field_name' => 'field_first_name',
+      'entity_type' => 'user',
+      'label' => 'First name',
+      'bundle' => 'user',
+      // If you don't set the "required" property then the field wont be required by default.
+      'required' => TRUE,
+      'settings' => array(
+        // Here you inform either or not you want this field showing up on the registration form.
+        'user_register_form' => 1,
+      ),
+      'widget' => array(
+        'type' => 'textfield',
+        'weight' => '1',
+      ),
+    );
+    field_create_instance($instance);
+  }
+
+  if (!field_info_field('field_last_name')) {
+    $field = array(
+      'field_name' => 'field_last_name',
+      'type' => 'text',
+    );
+    field_create_field($field);
+
+    // Create the instance on the bundle.
+    $instance = array(
+      'field_name' => 'field_last_name',
+      'entity_type' => 'user',
+      'label' => 'Last name',
+      'bundle' => 'user',
+      // If you don't set the "required" property then the field wont be required by default.
+      'required' => TRUE,
+      'settings' => array(
+        // Here you inform either or not you want this field showing up on the registration form.
+        'user_register_form' => 1,
+      ),
+      'widget' => array(
+        'type' => 'textfield',
+        'weight' => '1',
+      ),
+    );
+    field_create_instance($instance);
+  }
+
+}

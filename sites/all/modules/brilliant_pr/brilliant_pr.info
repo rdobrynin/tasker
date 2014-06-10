@@ -1,0 +1,25 @@
+name = Brilliant Projects Relationship Management
+description = Brilliant Projects Relationship Management
+core = 7.x
+package = BRILLIANT
+dependencies[] = date_popup
+dependencies[] = date_api
+files[] = brilliant_pr.install
+files[] = brilliant_pr.module
+files[] = brilliant_pr_project_admin_approve.inc
+files[] = brilliant_pr_project_admin_complete.inc
+files[] = brilliant_pr_project_admin_current.inc
+files[] = brilliant_pr_project_admin_remove.inc
+files[] = brilliant_pr_project_complete.inc
+files[] = brilliant_pr_project_current.inc
+files[] = brilliant_pr_ref_view.inc
+files[] = brilliant_pr_task_admin_approve.inc
+files[] = brilliant_pr_task_admin_current.inc
+files[] = brilliant_pr_task_admin_remove.inc
+files[] = brilliant_pr_task_complete.inc
+files[] = brilliant_pr_task_current.inc
+
+
+
+
+

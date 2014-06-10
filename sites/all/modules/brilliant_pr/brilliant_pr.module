@@ -1,0 +1,3327 @@
+<?php
+
+/**
+ * LIST OF PROJECT CONSTANTS
+ */
+
+define('PROJECT_WAIT', 0);
+define('PROJECT_APPROVE', 1);
+define('PROJECT_PROCESS', 2);
+define('PROJECT_COMPLETE', 3);
+define('PROJECT_FROZE', 4);
+define('PROJECT_REMOVE', 5);
+
+/**
+ * LIST OF TASK CONSTANTS
+ */
+
+define('TASK_APPROVE', 0);
+define('TASK_COMPLETE', 1);
+define('TASK_PLAY', 2);
+define('TASK_PAUSE', 3);
+define('TASK_READY', 4);
+define('TASK_REMOVE', 5);
+
+/**
+ * Implements hook_entity_info().
+ */
+
+function brilliant_pr_entity_info() {
+//  here is project entity
+  $info['brilliant_pr_project'] = array(
+    'label' => t('Project Entity'),
+    'controller class' => 'EntityBrilliantProjectBasicController',
+    'base table' => 'brilliant_pr_project',
+    'uri callback' => 'brilliant_pr_project_uri',
+    'fieldable' => TRUE,
+    'entity keys' => array(
+//       The 'id' (pid here) is the unique id.
+      'id' => 'pid',
+//       Bundle will be determined by the 'bundle_type' field
+      'bundle' => 'bundle_type'
+    ),
+    'bundle keys' => array(
+      'bundle' => 'bundle_type',
+    ),
+    'static cache' => TRUE,
+    'bundles' => array(
+      'brilliant_pr_project_bundle' => array(
+        'label' => 'Project bundle',
+        'admin' => array(
+          'path' => 'admin/structure/brilliant_pr_project/manage',
+//          access rights list below
+          'access arguments' => array('administer brilliant_pr_projects'),
+        ),
+      ),
+    ),
+    'view modes' => array(
+      'pid' => array(
+        'label' => t('Pid'),
+        'custom settings' => FALSE,
+      ),
+    )
+  );
+//  here is task entity
+  $info['brilliant_pr_task'] = array(
+    'label' => t('Task Entity'),
+    'controller class' => 'EntityBrilliantTaskBasicController',
+    'base table' => 'brilliant_pr_task',
+    'uri callback' => 'brilliant_pr_task_uri',
+    'fieldable' => TRUE,
+    'entity keys' => array(
+      'id' => 'tid',
+//       The 'id' (pid here) is the unique id.
+      'bundle' => 'bundle_type'
+//       Bundle will be determined by the 'bundle_type' field
+    ),
+    'bundle keys' => array(
+      'bundle' => 'bundle_type',
+    ),
+    'static cache' => TRUE,
+    'bundles' => array(
+      'brilliant_pr_task_bundle' => array(
+        'label' => 'Task bundle',
+        'admin' => array(
+          'path' => 'admin/structure/brilliant_pr_task/manage',
+//        access rights list below
+          'access arguments' => array('administer brilliant_pr_tasks'),
+        ),
+      ),
+    ),
+    'view modes' => array(
+      'tid' => array(
+        'label' => t('Tid'),
+        'custom settings' => FALSE,
+      )
+    )
+  );
+  return $info;
+}
+
+/**
+ * Implement hook_help()
+ */
+
+function brilliant_pr_help($path, $arg) {
+  switch ($path) {
+//     Main module help for the block module
+    case 'admin/help#brilliant_pr':
+      return '<p>' . t('',
+        array('@blocks' => url('admin/structure/brilliant_pr_task/manage'))) . '</p>';
+  }
+}
+
+/**
+ * Fetch a basic object of project.
+ */
+
+function brilliant_pr_project_load($pid = NULL, $reset = FALSE) {
+  $pids = (isset($pid) ? array($pid) : array());
+  $basic = brilliant_pr_project_load_multiple($pids, $reset); #see below
+  return $basic ? reset($basic) : FALSE;
+}
+
+/**
+ * Fetch a basic object of task.
+ */
+
+function brilliant_pr_task_load($tid = NULL, $reset = FALSE) {
+  $tids = (isset($tid) ? array($tid) : array());
+  $basic = brilliant_pr_task_load_multiple($tids, $reset); #see below
+  return $basic ? reset($basic) : FALSE;
+}
+
+/**
+ * Loads multiple basic project entities.
+ */
+
+function brilliant_pr_project_load_multiple($pids = FALSE, $conditions = array(), $reset = FALSE) {
+  return entity_load('brilliant_pr_project', $pids, $conditions, $reset);
+}
+
+/**
+ * Loads multiple basic task entities.
+ */
+
+function brilliant_pr_task_load_multiple($tids = FALSE, $conditions = array(), $reset = FALSE) {
+  return entity_load('brilliant_pr_task', $tids, $conditions, $reset);
+}
+
+/**
+ * Implements the project uri callback.
+ */
+
+function brilliant_pr_project_uri($basic) {
+  return array(
+    'path' => 'entity/brilliant_pr_project/basic/' . $basic->pid,
+  );
+}
+
+/**
+ * Implements the task uri callback.
+ */
+
+function brilliant_pr_task_uri($basic) {
+  return array(
+    'path' => 'entity/brilliant_pr_task/basic/' . $basic->tid,
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+
+function brilliant_pr_menu() {
+  $items['entity/brilliant_pr_project'] = array(
+    'title' => t('Current'),
+    'page callback' => 'brilliant_pr_project_info_page',
+//  access right for viewing projects
+    'access arguments' => array('view brilliant_pr_projects'),
+    'file' => 'brilliant_pr_project_current.inc',
+    'weight' => -100,
+  );
+
+  $items['admin/structure/brilliant_pr_project/manage'] = array(
+    'title' => t('Administer projects'),
+    'page callback' => 'brilliant_pr_project_admin_page',
+//  access rights for admin path with admin privileges
+    'access arguments' => array('administer brilliant_pr_projects'),
+    'file' => 'brilliant_pr_project_admin_current.inc',
+  );
+
+//  companies autocomplete
+
+  $items['companies/autocomplete'] = array(
+    'title' => 'Autocomplete for companies',
+    'page callback' => '_companies_autocomplete',
+    'access arguments' => array('view brilliant_pr_projects'),  //or whatever permission makes sense
+    'type' => MENU_CALLBACK
+  );
+
+  $items['admin/structure/brilliant_pr_project/manage/view'] = array(
+    'title' => 'Current projects',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+  );
+
+//  adding new tab page for completed projects
+  $items['admin/structure/brilliant_pr_project/manage/complete'] = array(
+    'title' => t('Completed projects'),
+    'page callback' => 'brilliant_pr_project_complete_page',
+    'access arguments' => array('administer brilliant_pr_projects'),
+    'weight' => -5,
+//    file attaching
+    'file' => 'brilliant_pr_project_admin_complete.inc',
+    'type' => MENU_LOCAL_TASK,
+  );
+
+//  adding new tab page for removed projects
+  $items['admin/structure/brilliant_pr_project/manage/remove'] = array(
+    'title' => t('Deleted projects'),
+    'page callback' => 'brilliant_pr_project_remove_page',
+    'access arguments' => array('remove brilliant_pr_projects'),
+    'weight' => -5,
+//    file attaching
+    'file' => 'brilliant_pr_project_admin_remove.inc',
+    'type' => MENU_LOCAL_TASK,
+  );
+//  adding new tab page for approve project
+  $items['admin/structure/brilliant_pr_project/manage/approve'] = array(
+    'title' => t('Projects for approve'),
+    'page callback' => 'brilliant_pr_project_approve_page',
+    'access arguments' => array('administer brilliant_pr_projects'),
+    'weight' => -15,
+//  file attaching
+    'file' => 'brilliant_pr_project_admin_approve.inc',
+    'type' => MENU_LOCAL_TASK,
+  );
+//  view project
+  $items['entity/brilliant_pr_project/basic/%brilliant_pr_project'] = array(
+    'title callback' => 'brilliant_pr_project_title',
+    'title arguments' => array(3),
+    'page callback' => 'brilliant_pr_project_view',
+    'page arguments' => array(3),
+    'access arguments' => array('view brilliant_pr_projects'),
+  );
+
+  $items['entity/brilliant_pr_project/basic/%brilliant_pr_project/view'] = array(
+    'title callback' => 'brilliant_pr_project_name',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'access arguments' => array('view own brilliant_pr_projects'),
+    'weight' => -10,
+  );
+//  edit or delete project
+  $items['entity/brilliant_pr_project/basic/%brilliant_pr_project/edit'] = array(
+    'title' => t('Edit'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('brilliant_pr_project_form', 3),
+    'access arguments' => array('edit brilliant_pr_projects'),
+    'type' => MENU_LOCAL_TASK,
+  );
+//  restore project
+  $items['entity/brilliant_pr_project/basic/%brilliant_pr_project/restore'] = array(
+    'title' => t('Restore'),
+    'page callback' => 'brilliant_pr_project_restore',
+    'page arguments' => array(2),
+    'weight' => -5,
+    'access arguments' => array('restore_delete_brilliant_pr_projects'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['entity/brilliant_pr_project/basic/%brilliant_pr_project/remove'] = array(
+    'title' => t('Remove'),
+    'page callback' => 'brilliant_pr_project_delete_once',
+    'page arguments' => array(2),
+    'weight' => -5,
+    'access arguments' => array('restore_delete_brilliant_pr_projects'),
+    'type' => MENU_CALLBACK,
+  );
+//  restore all projects - access rights only for admin
+  $items['entity/brilliant_pr_project/basic/restore_all'] = array(
+    'title' => t('Restore all'),
+    'page callback' => 'brilliant_pr_project_total_restore',
+    'page arguments' => array(2),
+    'weight' => -5,
+    'access arguments' => array('restore_delete_brilliant_pr_projects_all'),
+    'type' => MENU_CALLBACK,
+  );
+  //  restore all projects - access rights only for admin
+  $items['entity/brilliant_pr_project/basic/remove_all'] = array(
+    'title' => t('Remove all'),
+    'page callback' => 'brilliant_pr_project_total_remove',
+    'page arguments' => array(2),
+    'weight' => -5,
+    'access arguments' => array('restore_delete_brilliant_pr_projects_all'),
+    'type' => MENU_CALLBACK,
+  );
+//  delete project
+  $items['entity/brilliant_pr_project/basic/%brilliant_pr_project/delete'] = array(
+    'title' => t('Delete'),
+    'page callback' => 'brilliant_pr_project_delete_admin',
+    'page arguments' => array(2),
+    'weight' => -5,
+    'access arguments' => array('restore_delete_brilliant_pr_projects'),
+    'type' => MENU_CALLBACK,
+  );
+//  delete all projects - access rights only for admin
+  $items['entity/brilliant_pr_project/basic/delete_all'] = array(
+    'title' => t('Delete all'),
+    'page callback' => 'brilliant_pr_project_delete_all_admin',
+    'page arguments' => array(2),
+    'weight' => -5,
+    'access arguments' => array('restore_delete_brilliant_pr_projects_all'),
+    'type' => MENU_CALLBACK,
+  );
+//  tab for referenced tasks for this project
+  $items['entity/brilliant_pr_project/basic/%brilliant_pr_project/tasks'] = array(
+    'title' => t('Current tasks'),
+    'page callback' => 'brilliant_pr_ref_view',
+    'access arguments' => array('edit brilliant_pr_projects'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 100,
+    'file' => 'brilliant_pr_ref_view.inc',
+  );
+
+//  add remove and restore functionality for tasks
+  $items['entity/brilliant_pr_task/basic/%brilliant_pr_task/restore'] = array(
+    'title' => t('Restore'),
+    'page callback' => 'brilliant_pr_task_restore',
+    'page arguments' => array(2),
+    'weight' => -5,
+    'access arguments' => array('restore_delete_brilliant_pr_tasks'),
+    'type' => MENU_CALLBACK,
+  );
+//  restore all tasks - access right only for admin
+  $items['entity/brilliant_pr_task/basic/restore_all'] = array(
+    'title' => t('Restore all'),
+    'page callback' => 'brilliant_pr_task_total_restore',
+    'page arguments' => array(2),
+    'weight' => -5,
+    'access arguments' => array('restore_delete_brilliant_pr_tasks_all'),
+    'type' => MENU_CALLBACK,
+  );
+  //  add remove and restore functionality for tasks
+  $items['entity/brilliant_pr_task/basic/%brilliant_pr_task/remove'] = array(
+    'title' => t('Remove'),
+    'page callback' => 'brilliant_pr_task_remove_admin',
+    'page arguments' => array(2),
+    'weight' => -5,
+    'access arguments' => array('restore_delete_brilliant_pr_tasks'),
+    'type' => MENU_CALLBACK,
+  );
+  //  add remove and restore functionality for tasks
+  $items['entity/brilliant_pr_task/basic/remove_all'] = array(
+    'title' => t('Remove all'),
+    'page callback' => 'brilliant_pr_task_total_remove',
+    'page arguments' => array(2),
+    'weight' => -5,
+    'access arguments' => array('restore_delete_brilliant_pr_tasks'),
+    'type' => MENU_CALLBACK,
+  );
+// delete task
+  $items['entity/brilliant_pr_task/basic/%brilliant_pr_task/delete'] = array(
+    'title' => t('Delete'),
+    'page callback' => 'brilliant_pr_task_delete_admin',
+    'page arguments' => array(2),
+    'weight' => -5,
+    'access arguments' => array('restore_delete_brilliant_pr_tasks'),
+    'type' => MENU_CALLBACK,
+  );
+//  delete all tasks - access rights only for admin
+  $items['entity/brilliant_pr_task/basic/delete_all'] = array(
+    'title' => t('Delete all'),
+    'page callback' => 'brilliant_pr_task_delete_all_admin',
+    'page arguments' => array(2),
+    'weight' => -5,
+    'access arguments' => array('restore_delete_brilliant_pr_tasks_all'),
+    'type' => MENU_CALLBACK,
+  );
+//  add new tab page for remove tasks
+  $items['admin/structure/brilliant_pr_task/manage/remove'] = array(
+    'title' => t('Deleted tasks'),
+    'page callback' => 'brilliant_pr_task_remove_page',
+    'access arguments' => array('remove brilliant_pr_tasks'),
+    'weight' => -5,
+    'file' => 'brilliant_pr_task_admin_remove.inc',
+    'type' => MENU_LOCAL_TASK,
+  );
+
+  $items['entity/brilliant_pr_project/basic/add'] = array(
+    'title' => t('Projects'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'page callback' => 'brilliant_pr_project_add',
+    'access arguments' => array('create brilliant_pr_projects'),
+  );
+
+  /**
+   * Add new tabs
+   */
+
+  $items['entity/brilliant_pr_project/complete'] = array(
+    'title' => t('Completed'),
+    'page callback' => 'brilliant_pr_project_list_complete',
+    'access arguments' => array('view user completed brilliant_pr_projects'),
+    'file' => 'brilliant_pr_project_complete.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 3,
+  );
+  $items['entity/brilliant_pr_project/approve'] = array(
+    'title' => t('For approve'),
+    'page callback' => 'brilliant_pr_project_approve_page',
+    'access arguments' => array('view user approved brilliant_pr_projects'),
+    'file' => 'brilliant_pr_project_approve.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 2,
+  );
+  $items['entity/brilliant_pr_project/remove'] = array(
+    'title' => t('Deleted'),
+    'page callback' => 'brilliant_pr_project_remove_page',
+    'access arguments' => array('view user deleted brilliant_pr_projects'),
+    'file' => 'brilliant_pr_project_admin_remove.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 4,
+  );
+  $items['entity/brilliant_pr_task'] = array(
+    'title' => t('Tasks'),
+    'page callback' => 'brilliant_pr_task_info_page',
+    'access arguments' => array('view brilliant_pr_tasks'),
+    'file' => 'brilliant_pr_task_current.inc',
+  );
+
+  $items['admin/structure/brilliant_pr_task/manage'] = array(
+    'title' => t('Administer tasks'),
+    'page callback' => 'brilliant_pr_task_admin_page',
+    'access arguments' => array('administer brilliant_pr_tasks'),
+    'file' => 'brilliant_pr_task_admin_current.inc',
+  );
+
+  $items['admin/structure/brilliant_pr_task/manage/view'] = array(
+    'title' => t('Current tasks'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+  );
+//  adding new tab page for complete table
+  $items['entity/brilliant_pr_task/complete'] = array(
+    'title' => t('Completed Tasks'),
+    'page callback' => 'brilliant_pr_task_list_complete',
+    'access arguments' => array('view user completed brilliant_pr_tasks'),
+    'file' => 'brilliant_pr_task_complete.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => -90,
+  );
+  $items['entity/brilliant_pr_task/approve'] = array(
+    'title' => t('For approve'),
+    'page callback' => 'brilliant_pr_task_approve_page',
+    'access arguments' => array('view user approved brilliant_pr_tasks'),
+    'file' => 'brilliant_pr_task_admin_approve.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 2,
+  );
+  $items['entity/brilliant_pr_task/remove'] = array(
+    'title' => t('Deleted'),
+    'page callback' => 'brilliant_pr_task_remove_page',
+    'access arguments' => array('view user deleted brilliant_pr_tasks'),
+    'file' => 'brilliant_pr_task_admin_remove.inc',
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 4,
+  );
+//  adding new tab page for approve tasks
+  $items['admin/structure/brilliant_pr_task/manage/approve'] = array(
+    'title' => t('Tasks for approve'),
+    'page callback' => 'brilliant_pr_task_approve_page',
+    'access arguments' => array('administer brilliant_pr_tasks'),
+    'weight' => -15,
+    'file' => 'brilliant_pr_task_admin_approve.inc',
+    'type' => MENU_LOCAL_TASK,
+  );
+//  view task
+  $items['entity/brilliant_pr_task/basic/%brilliant_pr_task'] = array(
+    'title callback' => 'brilliant_pr_task_title',
+    'title arguments' => array(3),
+    'page callback' => 'brilliant_pr_task_view',
+    'page arguments' => array(3),
+    'access arguments' => array('view brilliant_pr_tasks'),
+  );
+
+  $items['entity/brilliant_pr_task/basic/%brilliant_pr_task/view'] = array(
+    'title callback' => 'brilliant_pr_task_name',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+  );
+//  edit task
+  $items['entity/brilliant_pr_task/basic/%brilliant_pr_task/edit'] = array(
+    'title' => t('Edit'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('brilliant_pr_task_form', 3),
+    'access arguments' => array('edit brilliant_pr_tasks'),
+    'type' => MENU_LOCAL_TASK,
+  );
+//  create task
+  $items['entity/brilliant_pr_task/basic/add'] = array(
+    'title' => t('Tasks'),
+    'page callback' => 'brilliant_pr_task_add',
+    'access arguments' => array('create brilliant_pr_tasks'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -100,
+  );
+
+//  add new user create tabs
+  $items['admin/people/list/curator'] = array(
+    'title' => t('Add curator'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('user_register_form', 3),
+    'access arguments' => array('administer users'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 1,
+  );
+  $items['admin/people/list/client'] = array(
+    'title' => t('Add client'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('user_register_form', 3),
+    'access arguments' => array('administer users'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 1,
+  );
+  $items['admin/people/list/implementor'] = array(
+    'title' => t('Add implementor'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('user_register_form', 3),
+    'access arguments' => array('administer users'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 1,
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ * list of permission access
+ */
+
+function brilliant_pr_permission() {
+  $permissions = array(
+//  permissions for project
+    'administer brilliant_pr_projects' => array(
+      'title' => t('Administer Project Entities'),
+//      access true for a while, below we make function for access rights
+      'restrict access' => TRUE,
+    ),
+    'remove brilliant_pr_projects' => array(
+      'title' => t('Remove Project Entities'),
+      'restrict access' => TRUE,
+    ),
+    'view brilliant_pr_projects' => array(
+      'title' => t('View Projects'),
+      'restrict access' => TRUE,
+    ),
+    'view own brilliant_pr_projects' => array(
+      'title' => t('View own Projects'),
+      'restrict access' => TRUE,
+    ),
+    'edit brilliant_pr_projects' => array(
+      'title' => t('Edit Projects'),
+      'restrict access' => TRUE,
+    ),
+    'create brilliant_pr_projects' => array(
+      'title' => t('Create Projects'),
+      'restrict access' => TRUE,
+    ),
+    'delete own brilliant_pr_projects' => array(
+      'title' => t('Delete own Projects'),
+      'restrict access' => TRUE,
+    ),
+    'remove own brilliant_pr_projects' => array(
+      'title' => t('Remove own Projects'),
+      'restrict access' => TRUE,
+    ),
+    'edit own brilliant_pr_projects' => array(
+      'title' => t('Edit own Projects'),
+      'restrict access' => TRUE,
+    ),
+    'delete any brilliant_pr_projects' => array(
+      'title' => t('Delete any Projects'),
+      'restrict access' => TRUE,
+    ),
+    'restore_delete_brilliant_pr_projects' => array(
+      'title' => t('Delete/Restore Projects'),
+      'restrict access' => TRUE,
+    ),
+    'restore_delete_brilliant_pr_projects_all' => array(
+      'title' => t('Delete/Restore All Projects'),
+      'restrict access' => TRUE,
+    ),
+    'view user completed brilliant_pr_projects' => array(
+      'title' => t('View user Completed Projects'),
+      'restrict access' => TRUE,
+    ),
+    'view user approved brilliant_pr_projects' => array(
+      'title' => t('View user Approved Projects'),
+      'restrict access' => TRUE,
+    ),
+    'view user deleted brilliant_pr_projects' => array(
+      'title' => t('View user Removed Projects'),
+      'restrict access' => TRUE,
+    ),
+//      permissions for task
+    'administer brilliant_pr_tasks' => array(
+      'title' => t('Administer Task Entities'),
+      'restrict access' => TRUE,
+    ),
+    'view brilliant_pr_tasks' => array(
+      'title' => t('View Task'),
+      'restrict access' => TRUE,
+    ),
+    'view user completed brilliant_pr_tasks' => array(
+      'title' => t('View user Completed Tasks'),
+      'restrict access' => TRUE,
+    ),
+    'view user approved brilliant_pr_tasks' => array(
+      'title' => t('View user Approved Tasks'),
+      'restrict access' => TRUE,
+    ),
+    'view user deleted brilliant_pr_tasks' => array(
+      'title' => t('View user Removed Tasks'),
+      'restrict access' => TRUE,
+    ),
+//
+    'view own brilliant_pr_tasks' => array(
+      'title' => t('View own Tasks'),
+      'restrict access' => TRUE,
+    ),
+    'edit brilliant_pr_tasks' => array(
+      'title' => t('Edit Tasks'),
+      'restrict access' => TRUE,
+    ),
+    'create brilliant_pr_tasks' => array(
+      'title' => t('Create Tasks'),
+      'restrict access' => TRUE,
+    ),
+    'remove brilliant_pr_tasks' => array(
+      'title' => t('Remove Task Entities'),
+      'restrict access' => TRUE,
+    ),
+    'delete own brilliant_pr_tasks' => array(
+      'title' => t('Delete own Tasks'),
+      'restrict access' => TRUE,
+    ),
+    'edit own brilliant_pr_tasks' => array(
+      'title' => t('Edit own Tasks'),
+      'restrict access' => TRUE,
+    ),
+    'delete any brilliant_pr_tasks' => array(
+      'title' => t('Delete any Tasks'),
+      'restrict access' => TRUE,
+    ),
+    'restore_delete_brilliant_pr_tasks' => array(
+      'title' => t('Delete/Restore Tasks'),
+      'restrict access' => TRUE,
+    ),
+    'restore_delete_brilliant_pr_tasks_all' => array(
+      'title' => t('Delete/Restore All Tasks'),
+      'restrict access' => TRUE,
+    ),
+  );
+  return $permissions;
+}
+
+/**
+ * project_access right function which validate, can user operate with project or not
+ * we create 4 operations (view, update, delete, create)
+ */
+
+function brilliant_pr_project_access($op, $entity_type, $entity = NULL, $account = NULL) {
+  global $user;
+//  DRUPAL OOP function  put into variable
+  $rights = & drupal_static(__FUNCTION__, array());
+
+//    If $op not equal with operation support, return false
+  if (!in_array($op, array('view', 'update', 'delete', 'create'), TRUE)) {
+    return FALSE;
+  }
+
+//  If not handled user to function(), then check the rights for current user
+  if (empty($account)) {
+    global $user;
+    $account = $user;
+  }
+
+//  $project can as object or off, the we use uid
+//  or $entity_type as static id, which cache key uses
+  $cid = is_object($entity) && !empty($entity->pid) ? $entity->pid : $entity_type;
+
+//  If validated entity and user rights, then return from cache
+  if (isset($rights[$account->uid][$cid][$op])) {
+    return $rights[$account->uid][$cid][$op];
+  }
+
+//  Validate, can user create projects
+  if ($op == 'create' && user_access('create brilliant_pr_projects', $account)) {
+    $rights[$account->uid][$cid][$op] = TRUE;
+    return TRUE;
+  }
+
+  if ($op == 'update') {
+//  Validate, can user edit projects
+    if (user_access('edit brilliant_pr_projects', $account)) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    } //  Validate, can user edit own projects
+    elseif (user_access('edit own brilliant_pr_projects', $account) && $entity->uid == $account->uid) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    }
+    elseif (user_access('restore_delete_brilliant_pr_projects', $account)) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    }
+    elseif (user_access('restore_delete_brilliant_pr_projects_all', $account)) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    }
+  }
+
+  elseif ($op == 'delete') {
+//  Validate, can user delete projects
+    if (user_access('delete any brilliant_pr_projects', $account)) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    } //  Validate, can user delete own projects
+    elseif (user_access('delete own brilliant_pr_projects', $account) && $entity->uid == $account->uid) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    }
+  }
+//  validate can user view own projects
+  elseif ($op == 'view') {
+    if (user_access('view brilliant_pr_projects', $account)) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    }
+    elseif (user_access('view own brilliant_pr_projects', $account) && $entity->uid == $account->uid) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    }
+    elseif (user_access('view user completed brilliant_pr_projects', $account) && $entity->uid == $account->uid) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    }
+    elseif (user_access('view user approved brilliant_pr_projects', $account) && $entity->uid == $account->uid) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    }
+    elseif (user_access('view user deleted brilliant_pr_projects', $account) && $entity->uid == $account->uid) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+/**
+ * task_access function which validate can user operate with project
+ * we create 4 operations (view, update, delete, create)
+ */
+
+function brilliant_pr_task_access($op, $entity_type, $entity = NULL, $account = NULL) {
+  $rights = & drupal_static(__FUNCTION__, array());
+
+  if (!in_array($op, array('view', 'update', 'delete', 'create'), TRUE)) {
+//    If $op not equal with operation support, return false
+    return FALSE;
+  }
+
+//  If not handled user to function(), then check the rights for current user
+  if (empty($account)) {
+    global $user;
+    $account = $user;
+  }
+
+//  $project can as object or off, the we use uid
+//  or $entity_type as static id, which cache key uses
+  $cid = is_object($entity) && !empty($entity->tid) ? $entity->tid : $entity_type;
+
+  if (isset($rights[$account->uid][$cid][$op])) {
+    return $rights[$account->uid][$cid][$op];
+  }
+
+//  Validate, can user create projects
+  if ($op == 'create' && user_access('create brilliant_pr_tasks', $account)) {
+    $rights[$account->uid][$cid][$op] = TRUE;
+    return TRUE;
+  }
+
+  if ($op == 'update') {
+//  Validate, can user edit projects
+    if (user_access('edit brilliant_pr_tasks', $account)) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    } //  Validate, can user edit own projects
+    elseif (user_access('edit own brilliant_pr_tasks', $account) && $entity->uid == $account->uid) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    }
+    elseif (user_access('restore_delete_brilliant_pr_tasks', $account)) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    }
+    elseif (user_access('restore_delete_brilliant_pr_tasks_all', $account)) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    }
+  }
+
+  elseif ($op == 'delete') {
+//  Validate, can user delete projects
+    if (user_access('delete any brilliant_pr_tasks', $account)) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    } //  Validate, can user delete own projects
+    elseif (user_access('delete own brilliant_pr_tasks', $account) && $entity->uid == $account->uid) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    }
+  }
+
+//  validate can user view own projects
+  elseif ($op == 'view') {
+    if (user_access('view brilliant_pr_tasks', $account)) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    }
+    elseif (user_access('view own brilliant_pr_tasks', $account) && $entity->uid == $account->uid) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    }
+    elseif (user_access('view user completed brilliant_pr_tasks', $account) && $entity->uid == $account->uid) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+/**
+ * Implements hook_entity_load().
+ */
+
+function brilliant_pr_project_entity_load($entities, $type) {
+  if ($type == 'brilliant_pr_project') {
+    foreach ($entities as $entity) {
+      if ($entity->uid) {
+        if ($account = user_load($entity->uid)) {
+          $entity->name = $account->name;
+        }
+      }
+      else {
+        $entity->name = variable_get('anonymous', t('Anonymous'));
+      }
+    }
+  }
+}
+
+function brilliant_pr_task_entity_load($entities, $type) {
+  if ($type == 'brilliant_pr_task') {
+    foreach ($entities as $entity) {
+      if ($entity->uid) {
+        if ($account = user_load($entity->uid)) {
+          $entity->name = $account->name;
+        }
+      }
+      else {
+        $entity->name = variable_get('anonymous', t('Anonymous'));
+      }
+    }
+  }
+}
+
+/**
+ * Callback for a project title when this entity is displayed.
+ * @param $entity
+ * @return null|string
+ */
+
+function brilliant_pr_project_title($entity) {
+  return t('@title', array('@title' => $entity->title));
+}
+
+
+///** title of current task and calucalion of total tasks for current project
+// * @return null|string
+// */
+//
+//function brilliant_pr_project_current_tasks() {
+//$arg = arg(3);
+//  if(is_numeric(arg(3))) {
+//    $tasks = brilliant_pr_task_load_multiple();
+//    $counter = 0;
+//    foreach ($tasks as $task) {
+//      if ($arg == $task->ref) {
+//        $counter++;
+//      }
+//    }
+//    if($counter !=0) {
+//      $title = 'Current tasks ('.$counter.')';
+//    }
+//    else {
+//      $title = 'No tasks';
+//    }
+//  }
+//  else {
+//    $title = 'Current tasks';
+//  }
+// return $title;
+//}
+
+
+/**
+ * @return string
+ */
+
+function brilliant_pr_project_name() {
+  $title = t('Project').' '.check_plain(menu_get_active_title());
+  return $title;
+}
+
+/**
+ * @return string
+ */
+function brilliant_pr_task_name() {
+  $title = t('Task').' '.check_plain(menu_get_active_title());
+  return $title;
+}
+
+/**
+ * Callback for a task title when this entity is displayed.
+ * @param $entity
+ * @return null|string
+ */
+
+function brilliant_pr_task_title($entity) {
+  return t('@title', array('@title' => $entity->title));
+}
+
+/**
+ * hook_entity_view()
+ * @param $entity
+ * @param string $view_mode
+ * @return array
+ */
+
+function brilliant_pr_project_view($entity, $view_mode = 'pid') {
+  global $user;
+  // Our entity type, for convenience.
+  $entity_type = 'brilliant_pr_project';
+  // Start setting up the content.
+  $entity->content = array(
+    '#view_mode' => $view_mode,
+  );
+// Implementor also can view project where referenced tasks for this project belongs to implementor
+
+  $ref = arg(3);
+  $result = db_select('brilliant_pr_task', 'bp')
+    ->fields('bp')
+    ->condition('ref', $ref, '=')
+    ->execute();
+  foreach ($result as $task) {
+//    print_r($task);
+  }
+
+  field_attach_prepare_view($entity_type, array($entity->pid => $entity), $view_mode);
+  entity_prepare_view($entity_type, array($entity->pid => $entity));
+  $entity->content += field_attach_view($entity_type, $entity, $view_mode);
+  $customer_name = user_load_by_name($entity->customer_name);
+  $curator = user_load_by_name($entity->curator);
+//check for user permission
+//  if need to make permission for manager route (for example) we add condition for this role
+  if (in_array('administrator', $user->roles) || $user->name == $entity->customer_name || $user->name == $entity->curator) {
+//    if description field is empty return information string hook_view
+    if (!empty($entity->description)) {
+      $entity->content['description'] = array(
+        '#type' => 'item',
+        '#title' => t('Basic information'),
+        '#markup' => $entity->description,
+      );
+    }
+    else {
+      $entity->content['description'] = array(
+        '#type' => 'item',
+        '#title' => t('Basic information'),
+        '#markup' => '<i>' . t('Not any description added') . '</i>',
+      );
+    }
+    if (!empty($entity->curator)) {
+      $entity->content['curator'] = array(
+        '#type' => 'item',
+        '#title' => t('Curator of project'),
+        '#markup' => get_name($curator->uid),
+      );
+    }
+    $entity->content['company'] = array(
+      '#type' => 'item',
+      '#title' => t('Company title'),
+      '#markup' => $entity->company,
+    );
+    $entity->content['customer_name'] = array(
+      '#type' => 'item',
+      '#title' => t('Customer\'s name'),
+      '#markup' => get_name($customer_name->uid),
+    );
+//    medium date format
+    $entity->content['opt_time'] = array(
+      '#type' => 'item',
+      '#title' => t('Optimal date to complete project'),
+      '#markup' => format_date($entity->opt_time, $type = 'medium', $format = 'Y/m/d', $timezone = NULL, $langcode = NULL),
+    );
+    $entity->content['dead_time'] = array(
+      '#type' => 'item',
+      '#title' => t('Deadline date to complete project'),
+      '#markup' => '<p>' . format_date($entity->dead_time, $type = 'medium', $format = 'Y/m/d', $timezone = NULL, $langcode = NULL) . '</p>',
+
+    );
+    $entity->content['status'] = array(
+      '#type' => 'item',
+      '#title' => t('Status of project'),
+      '#markup' => brilliant_pr_project_status_position_title($entity->status),
+      //see above
+    );
+//    status when last change was done
+    $entity->content['changed'] = array(
+      '#type' => 'item',
+      '#title' => t('Last change'),
+      '#markup' => format_date($entity->changed),
+    );
+    $entity->content['created'] = array(
+      '#type' => 'item',
+      '#title' => t('Created date'),
+      '#markup' => format_date($entity->created),
+    );
+  }
+  elseif ($user->name == $task->implementor) {
+    if (!empty($entity->description)) {
+      $entity->content['description'] = array(
+        '#type' => 'item',
+        '#title' => t('Basic information'),
+        '#markup' => $entity->description,
+      );
+    }
+    else {
+      $entity->content['description'] = array(
+        '#type' => 'item',
+        '#title' => t('Basic information'),
+        '#markup' => '<i>' . t('Not any description added') . '</i>',
+      );
+    }
+    if (!empty($entity->curator)) {
+      $entity->content['curator'] = array(
+        '#type' => 'item',
+        '#title' => t('Curator of project'),
+        '#markup' => $entity->curator,
+      );
+    }
+    $entity->content['company'] = array(
+      '#type' => 'item',
+      '#title' => t('Company title'),
+      '#markup' => $entity->company,
+    );
+    $entity->content['customer_name'] = array(
+      '#type' => 'item',
+      '#title' => t('Customer\'s name'),
+      '#markup' => $entity->customer_name,
+    );
+//    medium date format
+    $entity->content['opt_time'] = array(
+      '#type' => 'item',
+      '#title' => t('Optimal date to complete project'),
+      '#markup' => format_date($entity->opt_time, $type = 'medium', $format = 'Y/m/d', $timezone = NULL, $langcode = NULL),
+    );
+    $entity->content['dead_time'] = array(
+      '#type' => 'item',
+      '#title' => t('Deadline date to complete project'),
+      '#markup' => '<p>' . format_date($entity->dead_time, $type = 'medium', $format = 'Y/m/d', $timezone = NULL, $langcode = NULL) . '</p>',
+
+    );
+    $entity->content['status'] = array(
+      '#type' => 'item',
+      '#title' => t('Status of project'),
+      '#markup' => brilliant_pr_project_status_position_title($entity->status),
+      //see above
+    );
+//    status when last change was done
+    $entity->content['changed'] = array(
+      '#type' => 'item',
+      '#title' => t('Last change'),
+      '#markup' => format_date($entity->changed),
+    );
+    $entity->content['created'] = array(
+      '#type' => 'item',
+      '#title' => t('Created date'),
+      '#markup' => format_date($entity->created),
+    );
+
+
+  }
+  else {
+    drupal_goto($path = 'entity/brilliant_pr_project/basic/');
+  }
+
+  global $language;
+  $langcode = $language->language;
+  module_invoke_all('entity_view_brilliant_pr_project', $entity, $entity_type, $view_mode, $langcode);
+  drupal_alter( array('brilliant_pr_project_view', 'entity_view_brilliant_pr_project'), $entity->content, $entity_type);
+
+  $entity->content += array(
+    '#theme'     => $entity_type,
+    '#element'   => $entity,
+    '#view_mode' => $view_mode,
+    '#language'  => LANGUAGE_NONE,
+  );
+
+
+  return $entity->content;
+}
+
+// here is a view tab
+function brilliant_pr_task_view($entity, $view_mode = 'tid') {
+  global $user;
+  $entity_type = 'brilliant_pr_task';
+  $entity->content = array(
+    '#view_mode' => $view_mode,
+  );
+  $implementor = user_load_by_name($entity->implementor);
+  $curator = user_load_by_name($entity->curator);
+  field_attach_prepare_view($entity_type, array($entity->tid => $entity), $view_mode);
+  entity_prepare_view($entity_type, array($entity->tid => $entity));
+  $entity->content += field_attach_view($entity_type, $entity, $view_mode);
+  $project = brilliant_pr_project_load($pid = $entity->ref);
+  $customer_uid = user_load_by_name($project->customer_name);
+
+//  if need to make permission for manager route (for example) we add condition for this role *************************************
+  if ($user->uid == $entity->uid OR $user->name == $entity->implementor && $entity->status != 0 || in_array('administrator', $user->roles) && $entity->status != 0 || $user->name == $project->curator
+    || $user->name == $project->customer_name && $entity->status != 0
+  ) {
+    $entity->content['description'] = array(
+      '#type' => 'item',
+      '#title' => t('Basic information'),
+      '#markup' => $entity->description,
+    );
+    if (!empty($entity->curator) || !empty($entity->implementor)) {
+      $entity->content['curator'] = array(
+        '#type' => 'item',
+        '#title' => t('Curator of task'),
+        '#markup' => get_name($curator->uid),
+      );
+      if ($user->uid != in_array('customer', $user->roles) || $user->uid == in_array('curator', $user->roles) || $user->uid == in_array('administrator', $user->roles)) {
+        $entity->content['implementor'] = array(
+          '#type' => 'item',
+          '#title' => t('Implementor of project'),
+          '#markup' => get_name($implementor->uid),
+        );
+      }
+    }
+    $entity->content['ref'] = array(
+      '#type' => 'item',
+      '#title' => t('Project ref'),
+      '#markup' => $entity->ref,
+    );
+    $entity->content['company'] = array(
+      '#type' => 'item',
+      '#title' => t('Company title'),
+      '#markup' => $project->company,
+    );
+    $entity->content['customer_name'] = array(
+      '#type' => 'item',
+      '#title' => t('Customer\'s name'),
+      '#markup' => get_name($customer_uid->uid),
+    );
+    $entity->content['opt_time'] = array(
+      '#type' => 'item',
+      '#title' => t('Optimal time to complete task'),
+      '#markup' => format_date($entity->opt_time),
+    );
+    $entity->content['dead_time'] = array(
+      '#type' => 'item',
+      '#title' => t('Deadline time to complete task'),
+      '#markup' => '<p style="color:red;">' . format_date($entity->dead_time) . '</p>',
+    );
+    $entity->content['status'] = array(
+      '#type' => 'item',
+      '#title' => t('Status of task'),
+      '#markup' => brilliant_pr_task_status_position_title($entity->status),
+    );
+    $entity->content['changed'] = array(
+      '#type' => 'item',
+      '#title' => t('Last change'),
+      '#markup' => format_date($entity->changed),
+    );
+    $entity->content['created'] = array(
+      '#type' => 'item',
+      '#title' => t('Created date'),
+      '#markup' => format_date($entity->created),
+    );
+  }
+  else {
+    drupal_goto($path = 'entity/brilliant_pr_task/basic/');
+  }
+  global $language;
+  $langcode = $language->language;
+  module_invoke_all('entity_view_brilliant_pr_task', $entity, $entity_type, $view_mode, $langcode);
+  drupal_alter(
+    array('brilliant_pr_task_view', 'entity_view_brilliant_pr_task'),
+    $entity->content, $entity_type
+  );
+
+  $entity->content += array(
+    '#theme'     => $entity_type,
+    '#element'   => $entity,
+    '#view_mode' => $view_mode,
+    '#language'  => LANGUAGE_NONE,
+  );
+
+  return $entity->content;
+}
+
+/**
+ * Implements hook_field_extra_fields().
+ * DO NOT KNOW, EXTRA FIELDS NOT WORK CORRECTLY
+ */
+//here is extra filed, which can be found in admin page
+function brilliant_pr_field_extra_fields() {
+  $return = array();
+//  $return['brilliant_pr_project']['brilliant_pr_project_bundle']['form'] = array(
+//    $form_elements['title'] = array(
+//      'label' => t('Item Description of field'),
+//      'description' => t('Name (an extra form field)'),
+//      'weight' => -5,
+//    ),
+//    $form_elements['phone'] = array(
+//      'label' => t('Phone'),
+//      'description' => t('Item Description (an extra form field)'),
+//      'weight' => -5,
+//    ),
+//    $form_elements['opt_time'] = array(
+//      'label' => t('Optimal datetime'),
+//      'description' => t('Optimal time (an extra form field)'),
+//      'weight' => -5,
+//    ),
+//    $form_elements['dead_time'] = array(
+//      'label' => t('Deadline datetime'),
+//      'description' => t('Deadline datetime (an extra form field)'),
+//      'weight' => -5,
+//    ),
+//    $form_elements['curator'] = array(
+//      'label' => t('Curator'),
+//      'description' => t('Curator\'s name (an extra form field)'),
+//      'weight' => -5,
+//    ),
+//    $form_elements['company'] = array(
+//      'label' => t('Customer'),
+//      'description' => t('Customer\'s company (an extra form field)'),
+//      'weight' => -5,
+//    ),
+//    $form_elements['customer_name'] = array(
+//      'label' => t('Customer\'s name'),
+//      'description' => t('Customer\'s name (an extra form field)'),
+//      'weight' => -5,
+//    ),
+//    $display_elements['created'] = array(
+//      'label' => t('Creation date of field'),
+//      'description' => t('Creation date (an extra display field)'),
+//      'weight' => 10,
+//    ),
+//    $display_elements['changed'] = array(
+//      'label' => t('Last change'),
+//      'description' => t('Last change (an extra display field)'),
+//      'weight' => 10,
+//    ),
+//  );
+////  fields for task
+//  $return['brilliant_pr_task']['brilliant_pr_task_bundle']['form'] = array(
+//    $form_elements['title'] = array(
+//      'label' => t('Item Description of field'),
+//      'description' => t('Name (an extra form field)'),
+//      'weight' => -5,
+//    ),
+//    $form_elements['description'] = array(
+//      'label' => t('Description'),
+//      'description' => t('Item Description (an extra form field)'),
+//      'weight' => -5,
+//    ),
+//    $form_elements['opt_time'] = array(
+//      'label' => t('Optimal datetime'),
+//      'description' => t('Optimal time (an extra form field)'),
+//      'weight' => -5,
+//    ),
+//    $form_elements['dead_time'] = array(
+//      'label' => t('Deadline datetime'),
+//      'description' => t('Deadline datetime (an extra form field)'),
+//      'weight' => -5,
+//    ),
+//    $form_elements['curator'] = array(
+//      'label' => t('Curator'),
+//      'description' => t('Curator\'s name (an extra form field)'),
+//      'weight' => -5,
+//    ),
+//    $form_elements['implementor'] = array(
+//      'label' => t('Implementor'),
+//      'description' => t('Implementor\'s name (an extra form field)'),
+//      'weight' => -5,
+//    ),
+//    $display_elements['created'] = array(
+//      'label' => t('Creation date of field'),
+//      'description' => t('Creation date (an extra display field)'),
+//      'weight' => 10,
+//    ),
+//    $display_elements['changed'] = array(
+//      'label' => t('Last change'),
+//      'description' => t('Last change (an extra display field)'),
+//      'weight' => 10,
+//    ),
+//  );
+  return $return;
+}
+
+/**
+ * Provides a project wrapper on the edit form to add a new entity.
+ */
+
+function brilliant_pr_project_add() {
+  $entity = entity_get_controller('brilliant_pr_project')->create();
+  return drupal_get_form('brilliant_pr_project_form', $entity); // 'project_form' defined below
+}
+
+/**
+ * Provides a task wrapper on the edit form to add a new entity.
+ */
+
+function brilliant_pr_task_add() {
+  $entity = entity_get_controller('brilliant_pr_task')->create();
+  return drupal_get_form('brilliant_pr_task_form', $entity); // 'project_form' defined below
+}
+
+/**
+ * Implements project hook_form()
+ */
+
+function brilliant_pr_project_form($form, &$form_state, $entity) {
+  global $user;
+  // new role for administrate brilliant_pr
+  //  if need to make permission for manager or admin route (for example) we add condition for this role
+  if ($user->uid == $entity->uid && $entity->status != 5 || in_array('administrator', $user->roles) || $user->name == $entity->customer_name && $entity->status != 3 && $entity->status != 5 || $user->name == $entity->curator && $entity->status != 5) {
+    $form['title'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Project name'),
+      '#required' => TRUE,
+      '#default_value' => $entity->title,
+      // 'name' is a field in our data table from .install file
+      '#weight' => -100,
+    );
+    $form['description'] = array(
+      '#type' => 'textarea',
+      '#title' => t('Basic information'),
+      '#description' => t('Project data description'),
+      '#default_value' => isset($entity->description) ? $entity->description : '',
+      '#cols' => 60,
+      '#rows' => 10,
+      '#required' => FALSE,
+      '#weight' => -90,
+    );
+//select company from taxonomy
+    $result = db_select('taxonomy_term_data', 'c')
+      ->fields('c')
+      ->execute();
+    $company = array();
+    foreach ($result as $company_title) {
+      $company[$company_title->name] = $company_title->name;
+    }
+    $form['company'] = array(
+      '#title' => t('Company title'),
+      '#type' => 'textfield',
+      '#maxlength' => 128,
+      '#default_value' => isset($entity->company) ? $entity->company : '',
+      '#required' => TRUE,
+      '#weight' => -80,
+      '#autocomplete_path' => 'companies/autocomplete',
+    );
+//    Fetch list of customers
+    $customer_name = user_role_load_by_name('customer');
+    $result = db_select('users_roles', 'ur')
+      ->fields('ur', array('uid'))
+      ->condition('rid', $customer_name->rid)
+      ->execute();
+    $customer_names = array();
+    foreach ($result as $one_user) {
+      $user_record = get_name($one_user->uid);
+      $customer_names[$one_user->uid] = $user_record;
+    }
+
+    $form['customer_name'] = array(
+      '#title' => t('Customer\'s name'),
+      '#type' => 'select',
+      '#options' => $customer_names,
+      '#description' => t('Customer\'s name'),
+      '#default_value' => isset($entity->customer_name) ? $entity->customer_name : '',
+      '#required' => TRUE,
+      '#weight' => -80,
+    );
+//    Fetch list of curators
+    $curator = user_role_load_by_name('curator');
+    $result = db_select('users_roles', 'ur')
+      ->fields('ur', array('uid'))
+      ->condition('rid', $curator->rid)
+      ->execute();
+    $curators = array();
+    foreach ($result as $one_user) {
+      $user_record = get_name($one_user->uid);
+      $curators[$one_user->uid] = $user_record;
+    }
+    $form['curator'] = array(
+      '#type' => 'select',
+      '#options' => $curators,
+      '#title' => t('Curator'),
+      '#description' => t('Curator of project'),
+      '#default_value' => isset($entity->curator) ? $entity->curator : '',
+      '#required' => TRUE,
+      '#weight' => -70,
+    );
+    $form['editor'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Editor'),
+      '#options' => $user->name,
+      '#description' => t('Editor of project'),
+      '#default_value' => $user->name,
+      '#required' => TRUE,
+      '#weight' => -70,
+    );
+    $form['opt_time'] = array(
+      '#type' => 'date_popup',
+      '#title' => t('Optimal datetime'),
+      '#description' => t('Optimal datetime'),
+      '#default_value' => date('Y-m-d', $entity->opt_time),
+      '#date_year_range' => (date('Y')) . ':+5',
+      '#date_format' => 'Y-m-d',
+      '#size' => 20,
+      '#required' => FALSE,
+      '#weight' => -60,
+    );
+    $form['dead_time'] = array(
+      '#type' => 'date_popup',
+      '#title' => t('Deadline datetime'),
+      '#description' => t('Deadline datetime for project'),
+      '#default_value' => date('Y-m-d', $entity->dead_time),
+      '#date_year_range' => (date('Y')) . ':+5',
+      '#date_format' => 'Y-m-d',
+      '#size' => 20,
+      '#required' => TRUE,
+      '#weight' => -50,
+    );
+//    add conditions for status of project
+    global $user;
+    if ($user->uid != in_array('customer', $user->roles) || $user->uid == in_array('curator', $user->roles) || $user->uid == in_array('administrator', $user->roles)) {
+//      IF CREATED PROJECT  WE ADD STATUS COMPLETE && FROZE && WAIT, OTHERWISE -> WITHOUT STATUS COMPLETE && FROZE & WAIT
+      $add = arg(3); #get current #ID form path
+      if ($add != 'add') {
+//        we fetch tasks and validate if any task has status 1 or 5, we add project complete status and froze
+        $result = db_select('brilliant_pr_task', 'bp')
+          ->fields('bp')
+          ->condition('status', '1', '!=')
+          ->condition('ref', $add, '=')
+          ->execute();
+        foreach ($result as $task) {
+//          print_r($task);
+        }
+        if (!isset($task)) {
+          $form['status'] = array(
+            '#type' => 'radios',
+            '#title' => t('Status'),
+            '#description' => t('Status of project'),
+            '#default_value' => isset($entity->status) ? $entity->status : 1,
+            '#options' => array(
+              PROJECT_PROCESS => brilliant_pr_project_status_get_title(PROJECT_PROCESS),
+              PROJECT_APPROVE => brilliant_pr_project_status_get_title(PROJECT_APPROVE),
+              PROJECT_WAIT => brilliant_pr_project_status_get_title(PROJECT_WAIT),
+              PROJECT_COMPLETE => brilliant_pr_project_status_get_title(PROJECT_COMPLETE),
+            ),
+            '#required' => TRUE,
+            '#weight' => -40,
+          );
+        }
+        else {
+          $form['status'] = array(
+            '#type' => 'radios',
+            '#title' => t('Status'),
+            '#description' => t('Status of project'),
+            '#default_value' => isset($entity->status) ? $entity->status : 1,
+            '#options' => array(
+              PROJECT_PROCESS => brilliant_pr_project_status_get_title(PROJECT_PROCESS),
+              PROJECT_WAIT => brilliant_pr_project_status_get_title(PROJECT_WAIT),
+            ),
+            '#required' => TRUE,
+            '#weight' => -40,
+          );
+        }
+      }
+      else {
+        $form['status'] = array(
+          '#type' => 'value',
+          '#value' => PROJECT_APPROVE
+        );
+      }
+      $form['curator'] = array(
+        '#type' => 'select',
+        '#options' => $curators,
+        '#title' => t('Curator'),
+        '#description' => t('Curator of project'),
+        '#default_value' => isset($entity->curator) ? $entity->curator : '',
+        '#required' => TRUE,
+        '#weight' => -70,
+      );
+      $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Save & close'),
+        '#weight' => 100,
+      );
+      $form['submit_task'] = array(
+        '#type' => 'submit',
+        '#value' => t('Save and & create task'),
+        '#submit' => array('brilliant_pr_project_save_create_task'),
+        '#weight' => 150,
+      );
+    }
+//    IF CREATED PROJECT FOR CUSTOMER -> WE ADD STATUS WAIT, OTHERWISE -> ADD STATUS APPROVE FOR NEW PROJECT
+    elseif (arg(3) != 'add') {
+      $form['status'] = array(
+        '#type' => 'radios',
+        '#title' => t('Status'),
+        '#description' => t('Status of project. curator will approve status before to process it'),
+        '#default_value' => isset($entity->status) ? $entity->status : 2,
+        '#options' => array(
+          PROJECT_WAIT => brilliant_pr_project_status_get_title(PROJECT_WAIT),
+          PROJECT_FROZE => brilliant_pr_project_status_get_title(PROJECT_FROZE),
+          PROJECT_PROCESS => brilliant_pr_project_status_get_title(PROJECT_PROCESS),
+        ),
+        '#required' => TRUE,
+        '#weight' => -40,
+      );
+      $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Approve & close'),
+        '#weight' => 100,
+      );
+      $form['submit_task'] = array(
+        '#type' => 'submit',
+        '#value' => t('Approve and & create task'),
+        '#submit' => array('brilliant_pr_project_save_create_task'),
+        '#weight' => 150,
+      );
+    }
+    else {
+      $form['status'] = array(
+        '#type' => 'value',
+        '#value' => PROJECT_APPROVE
+      );
+      $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Approve & close'),
+        '#weight' => 100,
+      );
+      $form['submit_task'] = array(
+        '#type' => 'submit',
+        '#value' => t('Approve and & create task'),
+        '#submit' => array('brilliant_pr_project_save_create_task'),
+        '#weight' => 150,
+      );
+    }
+    $form['brilliant_pr_project_entity'] = array(
+      '#type' => 'value',
+      '#value' => $entity, // I don't know what this is or does.
+    );
+    field_attach_form('brilliant_pr_project', $entity, $form, $form_state);
+//  user access to delete operation, if has permission
+//    ADD CONDITION, IF TASK WITH REFERENCE ID ISSET AND HAVE NOT STATUS 0,2,3,4 RETURN TRUE
+    if (user_access('delete own brilliant_pr_projects') && arg(3) != 'add') {
+
+      $ref = arg(3);
+      $result = db_select('brilliant_pr_task', 'bp')
+        ->fields('bp')
+//        if tasks without status complete
+        ->condition('status', '1', '!=')
+//        if tasks without status remove
+        ->condition('status', '5', '!=')
+        ->condition('ref', $ref, '=')
+        ->execute();
+      $task = array();
+      foreach ($result as $tasks) {
+        $task[$tasks->status] = $tasks->status;
+      }
+
+
+      if (empty($task)) {
+      $form['delete'] = array(
+        '#type' => 'submit',
+        '#value' => t('Delete'),
+        '#submit' => array('brilliant_pr_project_edit_delete'),
+        '#weight' => 200,
+      );
+      }
+    }
+//    ADD CONDITION, IF PROJECT HAS UNCOMPLETED TASKS -> RETURN FALSE, OTHERWISE -> RETURN BUTTON "REMOVE"
+    if (user_access('remove own brilliant_pr_projects')) {
+      if (arg(3) != 'add') {
+        $ref = arg(3);
+        $result = db_select('brilliant_pr_task', 'bp')
+          ->fields('bp')
+//        if tasks without status complete
+          ->condition('status', '1', '!=')
+//        if tasks without status remove
+          ->condition('status', '5', '!=')
+          ->condition('ref', $ref, '=')
+          ->execute();
+        $task = array();
+        foreach ($result as $tasks) {
+          $task[$tasks->status] = $tasks->status;
+        }
+        if (empty($task)) {
+          $form['remove'] = array(
+            '#type' => 'submit',
+            '#value' => t('Remove'),
+            '#submit' => array('brilliant_pr_project_remove'),
+            '#weight' => 200,
+          );
+        }
+      } #end if
+    }
+    $form['cancel'] = array(
+      '#type' => 'submit',
+      '#value' => t('cancel'),
+      '#executes_submit_callback' => TRUE,
+      '#submit' => array('brilliant_pr_project_form_cancel'),
+      '#limit_validation_errors' => array(),
+      '#weight' => 250,
+    );
+  }
+  else {
+    drupal_goto($path = 'entity/brilliant_pr_project/basic/');
+  }
+  drupal_add_js(drupal_get_path('module', 'brilliant_pr') . '/brilliant_pr.autocomplete.js', array('weight' => 20));
+  return $form;
+}
+
+
+//Autocomplete for companies
+
+function _companies_autocomplete($string) {
+  $matches = array();
+  $result = db_select('taxonomy_term_data', 'c')
+    ->fields('c', array('name'))
+    ->condition('name', '%' . db_like($string) . '%', 'LIKE')
+    ->execute();
+  // save the query to matches
+  foreach ($result as $row) {
+    $matches[$row->name] = check_plain($row->name);
+  }
+  // Return the result to the form in json
+  drupal_json_output($matches);
+}
+
+
+
+
+/**
+ * Status function for project
+ */
+// constants see above
+function brilliant_pr_project_status_get_title($id = NULL) {
+  $ids = array(
+    PROJECT_FROZE => t('To froze'),
+    PROJECT_WAIT => t('To wait'),
+    PROJECT_PROCESS => t('To process '),
+    PROJECT_COMPLETE => t('To complete'),
+    PROJECT_APPROVE => t('To approve'),
+    PROJECT_REMOVE => t('To remove'),
+  );
+  if (isset($id)) {
+    return $ids[$id];
+  }
+  return $ids;
+}
+
+/**
+ * Status function for task
+ */
+// constants see above
+function brilliant_pr_project_status_position_title($id = NULL) {
+  $ids = array(
+    PROJECT_FROZE => t('Frozen'),
+    PROJECT_WAIT => t('In waiting'),
+    PROJECT_PROCESS => t('In progress'),
+    PROJECT_COMPLETE => t('Completed'),
+    PROJECT_APPROVE => t('Approving'),
+    PROJECT_REMOVE => t('Removed project'),
+  );
+  if (isset($id)) {
+    return $ids[$id];
+  }
+  return $ids;
+}
+
+/**
+ * Implements task hook_form()
+ */
+
+function brilliant_pr_task_form($form, &$form_state, $entity) {
+  global $user;
+  $project = brilliant_pr_project_load($pid = $entity->ref);
+  // new role for administrate brilliant_pr
+  //  if need to make permission for manager or admin route (for example) we add condition for this role
+//  if task status  == complete - customer can't edit form
+
+  if ($user->uid == $entity->uid && $entity->status != 1 OR  $user->name == $entity->implementor && $entity->status != 0 || in_array('administrator', $user->roles) || $user->name == $entity->curator || $user->name == $project->curator || $user->name == $project->customer_name) {
+    $form['title'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Task name'),
+      '#required' => TRUE,
+      '#default_value' => isset($entity->title) ? $entity->title : '',
+      '#weight' => -100,
+    );
+    $form['editor'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Editor'),
+      '#options' => $user->name,
+      '#description' => t('Editor of task'),
+      '#default_value' => $user->name,
+      '#required' => TRUE,
+      '#weight' => -70,
+    );
+// select projects from array without status 5 (remove) && 3 (complete)
+//    we check if we came from save and create task, we need get last pid of project, then we fetch it
+    $id = arg(4);
+    if (is_numeric($id)) {
+      $result = db_select('brilliant_pr_project', 'bp')
+        ->fields('bp')
+        ->condition('status', '5', '!=')
+        ->condition('status', '3', '!=')
+        ->condition('pid', $id, '=')
+        ->execute();
+// get project ID
+      foreach ($result as $projects) {
+        $form['ref'] = array(
+          '#type' => 'value',
+          '#default_value' => $projects->title,
+        );
+      }
+    } #end if
+    elseif (arg(3) != 'add') {
+      $result = db_select('brilliant_pr_project', 'bp')
+        ->fields('bp')
+        ->condition('status', '5', '!=')
+        ->condition('status', '3', '!=')
+        ->execute();
+      $titles = array();
+      foreach ($result as $projects) {
+        $titles[$projects->title] = $projects->title;
+      }
+      $form['ref'] = array(
+        '#type' => 'select',
+        '#options' => $titles,
+        '#title' => t('Project'),
+        '#description' => t('Project of task'),
+        '#default_value' => '',
+        '#required' => TRUE,
+        '#weight' => -95,
+      );
+    }
+    elseif (arg(3) == 'add' && $user->uid != in_array('implementor', $user->roles)) {
+      $result = db_select('brilliant_pr_project', 'bp')
+        ->fields('bp')
+        ->condition('status', '5', '!=')
+        ->condition('status', '3', '!=')
+        ->condition(db_or()
+          ->condition('curator', $user->name, '=')
+          ->condition('customer_name', $user->name, '='))
+        ->execute();
+      $titles = array();
+      foreach ($result as $projects) {
+        $titles[$projects->title] = $projects->title;
+      }
+      $form['ref'] = array(
+        '#type' => 'select',
+        '#options' => $titles,
+        '#title' => t('Project'),
+        '#description' => t('Project of task'),
+        '#default_value' => '',
+        '#required' => FALSE,
+        '#weight' => -95,
+      );
+    }
+    elseif (arg(3) == 'add' && $user->uid == in_array('implementor', $user->roles)) {
+      $result = db_select('brilliant_pr_project', 'bp')
+        ->fields('bp')
+        ->condition('status', '5', '!=')
+        ->condition('status', '3', '!=')
+        ->execute();
+      $titles = array();
+      foreach ($result as $projects) {
+        $titles[$projects->title] = $projects->title;
+      }
+      $form['ref'] = array(
+        '#type' => 'select',
+        '#options' => $titles,
+        '#title' => t('Project'),
+        '#description' => t('Project of task'),
+        '#default_value' => '',
+        '#required' => FALSE,
+        '#weight' => -95,
+      );
+    }
+    $form['description'] = array(
+      '#type' => 'textarea',
+      '#title' => t('Task details'),
+      '#description' => t('Task data description'),
+      '#default_value' => isset($entity->description) ? $entity->description : '',
+      '#cols' => 60,
+      '#rows' => 5,
+      '#required' => TRUE,
+      '#weight' => -90,
+    );
+//    Fetch list of implementors
+    $implementor = user_role_load_by_name('implementor');
+    $result = db_select('users_roles', 'ur')
+      ->fields('ur', array('uid'))
+      ->condition('rid', $implementor->rid)
+      ->execute();
+    $implementors = array();
+    foreach ($result as $one_user) {
+      $user_record = get_name($one_user->uid);
+      $implementors[$one_user->uid] = $user_record;
+    }
+    if ($user->uid != in_array('customer', $user->roles) || $user->uid == in_array('curator', $user->roles) || $user->uid == in_array('administrator', $user->roles)) {
+      $form['implementor'] = array(
+        '#type' => 'select',
+        '#options' => $implementors,
+        '#title' => t('Implementor'),
+        '#description' => t('Implementor of task'),
+        '#default_value' => isset($entity->implementor) ? $entity->implementor : '',
+        '#required' => TRUE,
+        '#weight' => -70,
+      );
+      $curator = user_role_load_by_name('curator');
+      $result = db_select('users_roles', 'ur')
+        ->fields('ur', array('uid'))
+        ->condition('rid', $curator->rid)
+        ->execute();
+      $curators = array();
+      foreach ($result as $one_user) {
+        $user_record = get_name($one_user->uid);
+        $curators[$one_user->uid] = $user_record;
+      }
+      $form['curator'] = array(
+        '#type' => 'select',
+        '#options' => $curators,
+        '#title' => t('Curator of task'),
+        '#description' => t('Curator of task'),
+        '#default_value' => isset($entity->curator) ? $entity->curator : '',
+        '#required' => TRUE,
+        '#weight' => -90,
+      );
+
+    } // end if
+    elseif($user->uid == in_array('customer', $user->roles)) {
+
+      //    Fetch list of implementors
+      $implementor = user_role_load_by_name('implementor');
+      $result = db_select('users_roles', 'ur')
+        ->fields('ur', array('uid'))
+        ->condition('rid', $implementor->rid)
+        ->execute();
+      $implementors = array();
+      foreach ($result as $one_user) {
+        $user_record = get_name($one_user->uid);
+        $implementors[$one_user->uid] = $user_record;
+      }
+
+      $form['implementor'] = array(
+        '#type' => 'select',
+        '#options' => $implementors,
+        '#title' => t('Implementor'),
+        '#description' => t('Implementor of task'),
+        '#default_value' => isset($entity->implementor) ? $entity->implementor : '',
+        '#required' => FALSE,
+        '#weight' => -70,
+      );
+
+    }
+    $form['opt_time'] = array(
+      '#type' => 'date_popup',
+      '#title' => t('OPT'),
+      '#description' => t('Optimal datetime'),
+      '#default_value' => date('Y-m-d H:i:s', $entity->opt_time),
+      '#date_format' => 'Y-m-d H:i:s',
+      '#date_year_range' => (date('Y')) . ':+1',
+      '#size' => 20,
+      '#required' => FALSE,
+      '#weight' => -60,
+
+    );
+    $form['dead_time'] = array(
+      '#type' => 'date_popup',
+      '#title' => t('DDT'),
+      '#default_value' => date('Y-m-d H:i:s', $entity->dead_time),
+      '#date_format' => 'Y-m-d H:i:s',
+      '#description' => t('Deadline datetime for project'),
+      '#date_year_range' => (date('Y')) . ':+1',
+      '#size' => 20,
+      '#required' => TRUE,
+      '#weight' => -50,
+    );
+    if ($user->uid == in_array('curator', $user->roles) || $user->uid == in_array('administrator', $user->roles)) {
+      if (arg(3) == 'add') {
+        $form['status'] = array(
+          '#type' => 'value',
+          '#value' => TASK_APPROVE
+        );
+      }
+      else {
+        $form['status'] = array(
+          '#type' => 'radios',
+          '#title' => t('Status'),
+          '#description' => t('Status of task'),
+          '#default_value' => isset($entity->status) ? $entity->status : 0,
+          '#options' => array(
+            TASK_READY => brilliant_pr_task_status_get_title(TASK_READY),
+            TASK_PAUSE => brilliant_pr_task_status_get_title(TASK_PAUSE),
+          ),
+          '#required' => TRUE,
+          '#weight' => -40,
+        );
+      }
+    }
+    $form['brilliant_pr_task_entity'] = array(
+      '#type' => 'value',
+      '#value' => $entity,
+      // I don't know what this is or does. (was taken from entity example)
+    );
+    // field_attach_form will "Add form elements for all fields for an entity to a form structure."
+    field_attach_form('brilliant_pr_task', $entity, $form, $form_state);
+    global $user;
+    if ($user->uid != in_array('customer', $user->roles) || $user->uid == in_array('curator', $user->roles) || $user->uid == in_array('administrator', $user->roles)) {
+      $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Save'),
+        '#weight' => 100,
+      );
+    }
+    else {
+      $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Approve'),
+        '#weight' => 100,
+      );
+    }
+    if ($user->uid == in_array('implementor', $user->roles)) {
+      if (arg(3) == 'add') {
+        $form['status'] = array(
+          '#type' => 'value',
+          '#value' => TASK_APPROVE
+        );
+      }
+      else {
+        $form['status'] = array(
+          '#type' => 'radios',
+          '#title' => t('Status'),
+          '#description' => t('Status of task'),
+          '#default_value' => isset($entity->status) ? $entity->status : 0,
+          '#options' => array(
+            TASK_PAUSE => brilliant_pr_task_status_get_title(TASK_PAUSE),
+            TASK_PLAY => brilliant_pr_task_status_get_title(TASK_PLAY),
+            TASK_COMPLETE => brilliant_pr_task_status_get_title(TASK_COMPLETE),
+            TASK_READY => brilliant_pr_task_status_get_title(TASK_READY),
+          ),
+          '#required' => TRUE,
+          '#weight' => -40,
+        );
+      }
+    }
+    if ($user->uid == in_array('customer', $user->roles)) {
+      $form['status'] = array(
+        '#type' => 'value',
+        '#value' => TASK_APPROVE
+      );
+    }
+    //  user access to delete button
+    if (user_access('delete own brilliant_pr_tasks') && arg(3) != 'add') {
+      $form['remove'] = array(
+        '#type' => 'submit',
+        '#value' => t('Delete'),
+        '#submit' => array('brilliant_pr_task_remove'),
+        '#limit_validation_errors' => array(),
+        '#weight' => 200,
+      );
+    }
+
+    $form['add_project'] = array(
+      '#type' => 'submit',
+      '#value' => t('Add project'),
+      '#limit_validation_errors' => array(),
+      '#submit' => array('brilliant_pr_task_project_add'),
+      '#weight' => 200,
+    );
+    $form['back'] = array(
+      '#type' => 'submit',
+      '#value' => t('Back'),
+      '#limit_validation_errors' => array(),
+      '#submit' => array('brilliant_pr_task_back'),
+      '#weight' => 200,
+    );
+
+//    $form['cancel'] = array(
+//      '#type' => 'submit',
+//      '#value' => t('cancel'),
+//      '#executes_submit_callback' => TRUE,
+//      '#submit' => array('brilliant_pr_task_form_cancel'),
+//      '#limit_validation_errors' => array(),
+//      '#weight' => 250,
+//    );
+  }
+  else {
+    drupal_goto($path = 'entity/brilliant_pr_task/');
+  }
+  return $form;
+}
+
+/**
+ *  Add project
+ */
+
+function brilliant_pr_task_project_add () {
+  drupal_goto($path = 'entity/brilliant_pr_project/basic/add');
+}
+
+/**
+ * Back to task
+ */
+
+function brilliant_pr_task_back () {
+  drupal_goto($path = 'entity/brilliant_pr_task');
+}
+/**
+ * Status function for task
+ * @param null $id
+ * @return array
+ */
+
+function brilliant_pr_task_status_get_title($id = NULL) {
+  $ids = array(
+    TASK_PAUSE => t('Pause'),
+    TASK_PLAY => t('Play'),
+    TASK_COMPLETE => t('Complete'),
+    TASK_APPROVE => t('Approve'),
+    TASK_READY => t('Ready'),
+    TASK_REMOVE => t('Remove'),
+  );
+
+  if (isset($id)) {
+    return $ids[$id];
+  }
+  return $ids;
+}
+
+/**
+ * Function get title from constants
+ * @param null $id
+ * @return array
+ */
+
+function brilliant_pr_task_status_position_title($id = NULL) {
+  $ids = array(
+    TASK_PAUSE => t('Paused'),
+    TASK_PLAY => t('In progress'),
+    TASK_COMPLETE => t('Completed'),
+    TASK_APPROVE => t('Approving'),
+    TASK_READY => t('Ready to start'),
+    TASK_REMOVE => t('Removed'),
+  );
+
+  if (isset($id)) {
+    return $ids[$id];
+  }
+  return $ids;
+}
+
+/**
+ * Validation form.
+ */
+
+function brilliant_pr_project_form_validate($form, &$form_state) {
+  field_attach_form_validate('brilliant_pr_project', $form_state['values']['brilliant_pr_project_entity'], $form, $form_state);
+//  check if optimal time is more then deadline time return false as set error
+  $opt = $form_state['values']['opt_time'];
+  $dt = $form_state['values']['dead_time'];
+  if ($opt > $dt) {
+    form_set_error('opt_time', t('Optimal time must be early than a deadline date.'));
+  }
+  $entities = brilliant_pr_project_load_multiple();
+//  check when we create new project, if title of project already in use, return false
+  $title = $form_state['values']['title'];
+  if (arg(03) == 'add') {
+    if (!empty($entities)) {
+      foreach ($entities as $entity) {
+        if ($title == $entity->title) {
+          form_set_error('title', t('This title of project is already in use'));
+        }
+      } #end foreach
+    }
+  }
+//  add condition for complete project. If project has at least one task with excluding status "complete or remove or approve"
+  elseif (arg(03) != 'add') {
+    $arg = arg(03);
+    if (!empty($entities)) {
+      $status_complete = $form_state['values']['status'];
+      $tasks = db_select('brilliant_pr_task', 'bp')
+        ->fields('bp')
+        ->condition('ref', $arg, '=')
+        ->condition('status', '3', '=')
+        ->execute();
+      foreach ($tasks as $task) {
+        if (isset($task)) {
+          foreach ($entities as $entity) {
+            if ($status_complete == 3 && $entity->pid == $task->ref) {
+              form_set_error('status', t('Project can not be completed due to some tasks which are not finished for this project'));
+            }
+            else {
+              return TRUE;
+            }
+          } #end foreach
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Validate Task form
+ * @param $form
+ * @param $form_state
+ */
+
+function brilliant_pr_task_form_validate($form, &$form_state) {
+  field_attach_form_validate('brilliant_pr_task', $form_state['values']['brilliant_pr_task_entity'], $form, $form_state);
+  $opt = $form_state['values']['opt_time'];
+  $dt = $form_state['values']['dead_time'];
+  if ($opt > $dt) {
+    form_set_error('opt_time', t('Optimal time must be early than a deadline date.'));
+  }
+//  check when we create new task, if title of task already in use, return false
+  $entities = brilliant_pr_task_load_multiple();
+  $title = $form_state['values']['title'];
+  if (arg(03) == 'add') {
+    if (!empty($entities)) {
+      foreach ($entities as $entity) {
+        if ($title == $entity->title) {
+          form_set_error('title', t('This title of task is already in use'));
+        }
+      } #end foreach
+    }
+  }
+}
+
+/**
+ *  Project form submit
+ * @param $form
+ * @param $form_state
+ */
+
+function brilliant_pr_project_form_submit($form, &$form_state) {
+  // Does this next line return an object - from a form?? Apparently...
+  $entity = $form_state['values']['brilliant_pr_project_entity'];
+  $entity->title = $form_state['values']['title'];
+  $entity->editor = $form_state['values']['editor'];
+  $entity->description = $form_state['values']['description'];
+  $field_key_cur = $form_state['values']['curator'];
+  $result_curator = $form['curator']['#options'][$field_key_cur];
+  //  we convert full name to username
+  $username_curator = get_user_curator($result_curator);
+  $entity->curator = $username_curator;
+  $field_key_cust = $form_state['values']['customer_name'];
+  $result_customer = $form['customer_name']['#options'][$field_key_cust];
+//  we convert full name to username
+  $username_customer = get_user_customer($result_customer);
+  $entity->customer_name = $username_customer;
+  $entity->company = $form_state['values']['company'];
+  $entity->opt_time = $form_state['values']['opt_time'];
+  $entity->dead_time = $form_state['values']['dead_time'];
+  $entity->status = $form_state['values']['status'];
+  field_attach_submit('brilliant_pr_project', $entity, $form, $form_state);
+  // 'project_save() defined below
+  $entity = brilliant_pr_project_save($entity);
+  // Move from 'add' page to 'view' page for that new pid
+  $form_state['redirect'] = 'entity/brilliant_pr_project/basic/';
+}
+
+/**
+ * Save project the create task for this project ID
+ * @param $form
+ * @param $form_state
+ */
+
+function  brilliant_pr_project_save_create_task($form, &$form_state) {
+  global $user;
+  // Does this next line return an object - from a form?? Apparently...
+  $entity = $form_state['values']['brilliant_pr_project_entity'];
+  $entity->title = $form_state['values']['title'];
+//  $entity->ref = $form_state['values']['ref'];
+  $entity->description = $form_state['values']['description'];
+  $entity->editor = $form_state['values']['editor'];
+  $field_key_cur = $form_state['values']['curator'];
+  $result_curator = $form['curator']['#options'][$field_key_cur];
+  $username_curator = get_user_curator($result_curator);
+  $entity->curator = $username_curator;
+
+  $field_key_cust = $form_state['values']['customer_name'];
+  $result_customer = $form['customer_name']['#options'][$field_key_cust];
+  $username_customer = get_user_customer($result_customer);
+  $entity->customer_name = $username_customer;
+
+  $entity->company = $form_state['values']['company'];
+  $entity->opt_time = $form_state['values']['opt_time'];
+  $entity->dead_time = $form_state['values']['dead_time'];
+  if ($user->uid != in_array('customer', $user->roles) || $user->uid == in_array('curator', $user->roles) || $user->uid == in_array('administrator', $user->roles)) {
+    $entity->status = $form_state['values']['status'];
+  }
+  field_attach_submit('brilliant_pr_project', $entity, $form, $form_state);
+  // 'brilliant_pr_project_save() defined below
+  brilliant_pr_project_save($entity);
+//  must to know which project is saved last (by id)
+  $result = db_select('brilliant_pr_project', 'bp')
+    ->fields('bp', array('pid'))
+    ->orderby('changed', 'DESC')
+    ->range(0, 1)
+    ->execute();
+  foreach ($result as $last) {
+    ;
+  }
+  // Move from 'add' page to 'view' page for that new pid
+  $form_state['redirect'] = 'entity/brilliant_pr_task/basic/add/' . $last->pid;
+}
+
+
+/**
+ * Project remove function. Get status 5 (status "removed")
+ * @param $form
+ * @param $form_state
+ */
+
+function brilliant_pr_project_remove($form, &$form_state) {
+  $entity = $form_state['values']['brilliant_pr_project_entity'];
+  $entity->title = $form_state['values']['title'];
+  $entity->description = $form_state['values']['description'];
+
+  $field_key_cur = $form_state['values']['curator'];
+  $result_curator = $form['curator']['#options'][$field_key_cur];
+  $username_curator = get_user_curator($result_curator);
+  $entity->curator = $username_curator;
+
+  $field_key_cust = $form_state['values']['customer_name'];
+  $result_customer = $form['customer_name']['#options'][$field_key_cust];
+  $username_customer = get_user_customer($result_customer);
+  $entity->customer_name = $username_customer;
+
+  $entity->company = $form_state['values']['company'];
+  $entity->opt_time = $form_state['values']['opt_time'];
+  $entity->dead_time = $form_state['values']['dead_time'];
+  $entity->status = 5;
+  field_attach_submit('brilliant_pr_project', $entity, $form, $form_state);
+  // 'project_save() defined below
+  brilliant_pr_project_save($entity);
+  // Move from 'add' page to 'view' page for that new pid
+  $form_state['redirect'] = 'entity/brilliant_pr_project/';
+}
+
+/**
+ * Task remove function. Get status 5 (status "removed")
+ */
+
+function brilliant_pr_task_remove() {
+  $id = arg(3);
+  db_update('brilliant_pr_task')
+    ->fields(array('status' => '5'))
+    ->condition('tid', $id)
+    ->execute();
+  drupal_goto($path = 'entity/brilliant_pr_task');
+}
+
+function brilliant_pr_task_remove_admin() {
+  $id = arg(3);
+  db_update('brilliant_pr_task')
+    ->fields(array('status' => '5'))
+    ->condition('tid', $id)
+    ->execute();
+  drupal_goto($path = 'entity/brilliant_pr_task/complete');
+}
+
+
+/**
+ * RESTORE PROJECT BY ID FORM REMOVED TAB
+ */
+
+function brilliant_pr_project_delete_once() {
+  $id = arg(3);
+  db_update('brilliant_pr_project')
+    ->fields(array('status' => '5'))
+    ->condition('pid', $id)
+    ->execute();
+  drupal_goto($path = 'admin/structure/brilliant_pr_project/manage/complete/');
+}
+
+/**
+ * RESTORE PROJECT BY ID FORM REMOVED TAB
+ */
+
+function brilliant_pr_project_restore() {
+  $id = arg(3);
+  db_update('brilliant_pr_project')
+    ->fields(array('status' => '4'))
+    ->condition('pid', $id)
+    ->execute();
+  drupal_goto($path = 'admin/structure/brilliant_pr_project/manage/remove/');
+}
+
+/**
+ *  RESTORE TASK BY ID FORM REMOVED TAB
+ */
+
+function brilliant_pr_task_restore() {
+  $id = arg(3);
+  db_update('brilliant_pr_task')
+    ->fields(array('status' => '3'))
+    ->condition('tid', $id)
+    ->execute();
+  drupal_goto($path = 'admin/structure/brilliant_pr_task/manage/remove/');
+}
+
+/**
+ *  RESTORE PROJECTS BY STATUS FORM REMOVED TAB
+ */
+
+function brilliant_pr_project_total_restore() {
+  db_update('brilliant_pr_project')
+    ->fields(array('status' => '4'))
+    ->condition('status', '5')
+    ->execute();
+  drupal_goto($path = 'admin/structure/brilliant_pr_project/manage/');
+}
+
+/**
+ *  RESTORE all TASKS BY STATUS FORM REMOVE TAB
+ */
+
+function brilliant_pr_task_total_restore() {
+  db_update('brilliant_pr_task')
+    ->fields(array('status' => '3'))
+    ->condition('status', '5')
+    ->execute();
+  drupal_goto($path = 'admin/structure/brilliant_pr_task/manage/');
+}
+
+/**
+ *  REMOVE all TASKS BY STATUS FORM COMPLETE TAB
+ */
+
+function brilliant_pr_task_total_remove() {
+  db_update('brilliant_pr_task')
+    ->fields(array('status' => '5'))
+    ->condition('status', '1')
+    ->execute();
+  drupal_goto($path = 'entity/brilliant_pr_task');
+}
+
+/**
+ *  REMOVE ALL PROJECTS BY STATUS(3) FORM COMPLETE TAB
+ */
+
+function brilliant_pr_project_total_remove() {
+// first we remove tasks for these complete projects
+  $entities = brilliant_pr_project_load_multiple();
+  if (!empty($entities)) {
+    foreach ($entities as $entity) {
+      if ($entity->status == 3) {
+        $ref = $entity->pid;
+        db_update('brilliant_pr_task')
+          ->fields(array('status' => '5'))
+          ->condition('ref', $ref)
+          ->execute();
+      }
+    }
+  }
+//  next we remove projects with status complete
+  db_update('brilliant_pr_project')
+    ->fields(array('status' => '5'))
+    ->condition('status', '3')
+    ->execute();
+  drupal_goto($path = 'admin/structure/brilliant_pr_project/manage/remove');
+}
+
+/**
+ *  DELETE PROJECT BY ID FORM REMOVED TAB AND OWN TASKS
+ */
+
+function brilliant_pr_project_delete_admin() {
+  $id = arg(3);
+  db_delete('brilliant_pr_task')
+    ->condition('ref', $id)
+    ->execute();
+  db_delete('brilliant_pr_project')
+    ->condition('pid', $id)
+    ->condition('status', '5')
+    ->execute();
+//  add tasks also with #id of this project
+  drupal_goto($path = 'admin/structure/brilliant_pr_project/manage/remove/');
+}
+
+/**
+ *  DELETE TASK BY ID FORM REMOVE TAB
+ */
+
+function brilliant_pr_task_delete_admin() {
+  $id = arg(3);
+  db_delete('brilliant_pr_task')
+    ->condition('tid', $id)
+    ->condition('status', '5')
+    ->execute();
+  drupal_goto($path = 'admin/structure/brilliant_pr_task/manage/remove/');
+}
+
+/**
+ *  DELETE ALL PROJECTS BY STATUS FORM REMOVE TAB WITH OWN TASKS
+ */
+
+function brilliant_pr_project_delete_all_admin() {
+//  remove first tasks with ref of project id
+  $entities = brilliant_pr_project_load_multiple();
+  if (!empty($entities)) {
+    foreach ($entities as $entity) {
+      if ($entity->status == 5) {
+        $ref = $entity->pid;
+        db_delete('brilliant_pr_task')
+          ->condition('ref', $ref)
+          ->execute();
+      }
+    }
+  }
+//  after deleting tasks, we delete projects with status complete (5)
+  db_delete('brilliant_pr_project')
+    ->condition('status', '5')
+    ->execute();
+  drupal_goto($path = 'admin/structure/brilliant_pr_project/manage/');
+}
+
+/**
+ *  DELETE ALL TASKS BY STATUS FORM REMOVE TAB
+ */
+
+function brilliant_pr_task_delete_all_admin() {
+//  then we delete projects with status complete (5)
+  db_delete('brilliant_pr_task')
+    ->condition('status', '5')
+    ->execute();
+  drupal_goto($path = 'admin/structure/brilliant_pr_task/manage/');
+}
+
+/**
+ * Cancel edit/create project form
+ * @param $form
+ * @param $form_state
+ */
+
+function brilliant_pr_project_form_cancel($form, &$form_state) {
+//  form rebuild ?!
+  $form_state['redirect'] = 'entity/brilliant_pr_project/basic/';
+}
+
+/**
+ * Cancel edit/create task form
+ * @param $form
+ * @param $form_state
+ */
+
+function brilliant_pr_task_form_cancel($form, &$form_state) {
+  $form_state['redirect'] = 'entity/brilliant_pr_task/';
+}
+
+/**
+ * Task form submit
+ * @param $form
+ * @param $form_state
+ */
+
+function brilliant_pr_task_form_submit($form, &$form_state) {
+  global $user;
+  // Does this next line return an object - from a form?? Apparently...
+  $entity = $form_state['values']['brilliant_pr_task_entity'];
+  $entity->title = $form_state['values']['title'];
+  $entity->editor = $form_state['values']['editor'];
+//  insert project #ID to db instead title
+  $entities = brilliant_pr_project_load_multiple();
+  foreach ($entities as $project) {
+    if ($project->title == $form_state['values']['ref']) {
+      $entity->ref = $project->pid;
+    }
+  }
+  $entity->description = $form_state['values']['description'];
+//  condition, if curator or administrator have privileges to choose curator or implementor
+  if ($user->uid != in_array('customer', $user->roles) || $user->uid == in_array('curator', $user->roles) || $user->uid == in_array('administrator', $user->roles)) {
+    $field_key_cur = $form_state['values']['curator'];
+    $result_curator = $form['curator']['#options'][$field_key_cur];
+    $username_curator = get_user_curator($result_curator);
+    $entity->curator = $username_curator;
+    $field_key_imp = $form_state['values']['implementor'];
+    $result_implementor = $form['implementor']['#options'][$field_key_imp];
+    $username_implementor = get_user_implementor($result_implementor);
+    $entity->implementor = $username_implementor;
+  }
+
+
+  elseif($user->uid == in_array('customer', $user->roles)) {
+    $project = brilliant_pr_project_load($pid = $entity->ref);
+    $username_curator = $project->curator;
+    $entity->curator = $username_curator;
+//    $field_key_imp = $form_state['values']['implementor'];
+//    $result_implementor = $form['implementor']['#options'][$field_key_imp];
+//    $username_implementor = get_user_implementor($result_implementor);
+//    $entity->implementor = $username_implementor;
+  }
+  $entity->opt_time = $form_state['values']['opt_time'];
+  $entity->dead_time = $form_state['values']['dead_time'];
+  $entity->status = $form_state['values']['status'];
+  field_attach_submit('brilliant_pr_task', $entity, $form, $form_state);
+  // 'brilliant_pr_task_save() defined below
+  $entity = brilliant_pr_task_save($entity);
+  // Move from 'add' page to 'view' page for that new pid
+  $form_state['redirect'] = 'entity/brilliant_pr_task/basic/';
+}
+
+/**
+ * Project form deletion handler.
+ * @param $form
+ * @param $form_state
+ */
+
+function brilliant_pr_project_edit_delete($form, &$form_state) {
+  $entity = $form_state['values']['brilliant_pr_project_entity'];
+  brilliant_pr_project_delete($entity);
+  drupal_set_message(t('The project %title (ID %id) has been deleted',
+      array('%title' => $entity->title, '%id' => $entity->pid))
+  );
+  $form_state['redirect'] = 'entity/brilliant_pr_project/basic';
+}
+
+/**
+ * Task form deletion handler
+ * @param $form
+ * @param $form_state
+ */
+
+function brilliant_pr_task_edit_delete($form, &$form_state) {
+  $entity = $form_state['values']['brilliant_pr_task_entity'];
+  brilliant_pr_task_delete($entity);
+  drupal_set_message(t('The task %title (ID %id) has been deleted',
+      array('%title' => $entity->title, '%id' => $entity->tid))
+  );
+  $form_state['redirect'] = 'entity/brilliant_pr_task/basic';
+}
+
+
+/**
+ * We save the project entity by calling the controller.
+ * @param $entity
+ * @return mixed
+ */
+
+function brilliant_pr_project_save(&$entity) {
+  return entity_get_controller('brilliant_pr_project')->save($entity);
+}
+
+/**
+ * We save the task entity by calling the controller.
+ * @param $entity
+ * @return mixed
+ */
+
+function brilliant_pr_task_save(&$entity) {
+  return entity_get_controller('brilliant_pr_task')->save($entity);
+}
+
+/**
+ * Use the controller to delete the project entity.
+ * @param $entity
+ */
+
+function brilliant_pr_project_delete($entity) {
+  entity_get_controller('brilliant_pr_project')->delete($entity);
+}
+
+/**
+ * Use the controller to delete the task entity.
+ * @param $entity
+ */
+
+function brilliant_pr_task_delete($entity) {
+  entity_get_controller('brilliant_pr_task')->delete($entity);
+}
+
+/**
+ * Get First and Last names with concatenation
+ * fetch two records, first from first_name db, then last_name
+ * after that we make concatenation and first_name.last_name
+ * @param $uid
+ * @return mixed
+ */
+
+function get_name($uid) {
+//get first_name
+  if(isset($uid)) {
+    $first_name = db_select('field_data_field_first_name', 'n')
+      ->condition('entity_id', $uid, '=')
+      ->fields('n', array(
+        'field_first_name_value',
+      ));
+    $results_first = $first_name
+      ->execute();
+    foreach ($results_first as $first) {
+    }
+    //get last_name
+    $last_name = db_select('field_data_field_last_name', 'n')
+      ->condition('entity_id', $uid, '=')
+      ->fields('n', array(
+        'field_last_name_value',
+      ));
+    $results_last = $last_name
+      ->execute();
+    foreach ($results_last as $last) {
+    }
+// make concatenation First_name + Last_name
+    $first_result = $first->field_first_name_value;
+    $last_result = $last->field_last_name_value;
+    $full_name = $first_result . ' ' . $last_result;
+  }
+  else {
+    $full_name = '';
+  }
+
+  return $full_name;
+}
+
+/**
+ * Get username from first and last name
+ * @param $user
+ * @return mixed
+ */
+
+function get_user_curator($user) {
+  if($user != '') {
+    $arr = explode(' ', trim($user));
+    $first = $arr[0];
+    $last = $arr[1];
+//get first_name uid
+    $curator_name = user_role_load_by_name('curator');
+    $result = db_select('users_roles', 'ur')
+      ->fields('ur', array('uid'))
+      ->condition('rid', $curator_name->rid)
+      ->execute();
+    $curator_names = array();
+    foreach ($result as $one_user) {
+      $user_record = $one_user->uid;
+      $curator_names[] = $user_record;
+    }
+    $or = db_or();
+    foreach ($curator_names as $nrn) {
+      $or->condition('n.entity_id', $nrn);
+    }
+    $first_name = db_select('field_data_field_first_name', 'n')
+      ->condition('field_first_name_value', $first, '=')
+      ->condition($or)
+      ->fields('n', array(
+        'entity_id',
+      ));
+    $results_first = $first_name
+      ->execute();
+    foreach ($results_first as $first) {
+//    print_r($first);
+    }
+    //get last_name uid
+    $last_name = db_select('field_data_field_last_name', 'n')
+      ->condition('field_last_name_value', $last, '=')
+      ->condition($or)
+      ->fields('n', array(
+        'entity_id',
+      ));
+    $results_last = $last_name
+      ->execute();
+    foreach ($results_last as $last) {
+      if ($first->entity_id == $last->entity_id) {
+        $user_id = $first->entity_id;
+      }
+    }
+    $u = user_load($user_id);
+    $user = $u->name;
+  }
+  else {
+    $user = '';
+  }
+
+
+  return $user;
+}
+
+/**
+ * Get username from first and last name
+ * @param $user
+ * @return mixed
+ */
+
+function get_user_customer($user) {
+
+  if($user != '') {
+    $arr = explode(' ', trim($user));
+    $first = $arr[0];
+    $last = $arr[1];
+//get first_name uid
+    $customer_name = user_role_load_by_name('customer');
+    $result = db_select('users_roles', 'ur')
+      ->fields('ur', array('uid'))
+      ->condition('rid', $customer_name->rid)
+      ->execute();
+    $customer_names = array();
+    foreach ($result as $one_user) {
+      $user_record = $one_user->uid;
+      $customer_names[] = $user_record;
+    }
+    $or = db_or();
+    foreach ($customer_names as $nrn) {
+      $or->condition('n.entity_id', $nrn);
+    }
+    $first_name = db_select('field_data_field_first_name', 'n')
+      ->condition('field_first_name_value', $first, '=')
+      ->condition($or)
+      ->fields('n', array(
+        'entity_id',
+      ));
+    $results_first = $first_name
+      ->execute();
+    foreach ($results_first as $first) {
+//    print_r($first);
+    }
+    //get last_name uid
+    $last_name = db_select('field_data_field_last_name', 'n')
+      ->condition('field_last_name_value', $last, '=')
+      ->condition($or)
+      ->fields('n', array(
+        'entity_id',
+      ));
+    $results_last = $last_name
+      ->execute();
+    foreach ($results_last as $last) {
+      if ($first->entity_id == $last->entity_id) {
+        $user_id = $first->entity_id;
+      }
+    }
+    $u = user_load($user_id);
+    $user = $u->name;
+  }
+  else {
+    $user = '';
+  }
+  return $user;
+}
+
+
+/**
+ * Get username from first and last name
+ * @param $user
+ * @return mixed
+ */
+
+function get_user_implementor($user) {
+  if($user != '') {
+    $arr = explode(' ', trim($user));
+    $first = $arr[0];
+    $last = $arr[1];
+//get first_name uid
+    $implementor_name = user_role_load_by_name('implementor');
+    $result = db_select('users_roles', 'ur')
+      ->fields('ur', array('uid'))
+      ->condition('rid', $implementor_name->rid)
+      ->execute();
+    $implementor_names = array();
+    foreach ($result as $one_user) {
+      $user_record = $one_user->uid;
+      $implementor_names[] = $user_record;
+    }
+    $or = db_or();
+    foreach ($implementor_names as $nrn) {
+      $or->condition('n.entity_id', $nrn);
+    }
+    $first_name = db_select('field_data_field_first_name', 'n')
+      ->condition('field_first_name_value', $first, '=')
+      ->condition($or)
+      ->fields('n', array(
+        'entity_id',
+      ));
+    $results_first = $first_name
+      ->execute();
+    foreach ($results_first as $first) {
+//    print_r($first);
+    }
+    //get last_name uid
+    $last_name = db_select('field_data_field_last_name', 'n')
+      ->condition('field_last_name_value', $last, '=')
+      ->condition($or)
+      ->fields('n', array(
+        'entity_id',
+      ));
+    $results_last = $last_name
+      ->execute();
+    foreach ($results_last as $last) {
+      if ($first->entity_id == $last->entity_id) {
+        $user_id = $first->entity_id;
+      }
+    }
+    $u = user_load($user_id);
+    $user = $u->name;
+  }
+  else {
+    $user = '';
+  }
+
+  return $user;
+}
+
+
+/**
+ * Interface EntityBrilliantProjectBasicControllerInterface
+ */
+
+interface EntityBrilliantProjectBasicControllerInterface
+  extends DrupalEntityControllerInterface {
+  public function create();
+
+  public function save($entity);
+
+  public function delete($entity);
+}
+
+/**
+ * Interface EntityBrilliantTaskBasicControllerInterface
+ */
+
+interface EntityBrilliantTaskBasicControllerInterface
+  extends DrupalEntityControllerInterface {
+  public function create();
+
+  public function save($entity);
+
+  public function delete($entity);
+}
+
+/**
+ * Class EntityBrilliantProjectBasicController
+ * EntityProjectBasicController extends DrupalDefaultEntityController.
+ * add a few important create, update, and delete methods.
+ */
+
+class EntityBrilliantProjectBasicController
+  extends DrupalDefaultEntityController
+  implements EntitybrilliantProjectBasicControllerInterface {
+  public function create() {
+    global $user;
+    $entity = new stdClass();
+    $entity->type = 'brilliant_pr_project';
+    $entity->pid = 0;
+    $entity->bundle_type = 'brilliant_pr_project_bundle';
+    $entity->title = '';
+    $entity->editor = '';
+    $entity->description = '';
+    $entity->opt_time = REQUEST_TIME;
+    $entity->dead_time = REQUEST_TIME;
+    $entity->curator = '';
+    $entity->company = '';
+    $entity->customer_name = '';
+    $entity->status = 1;
+    $entity->changed = REQUEST_TIME;
+    $entity->uid = $user->uid;
+    return $entity;
+  }
+
+  /**
+   * @param $entity
+   * @return mixed
+   */
+
+  public function save($entity) {
+    if (empty($entity->pid)) {
+      $entity->created = time();
+    }
+    $entity->changed = time();
+    $entity->opt_time = strtotime($entity->opt_time);
+    $entity->dead_time = strtotime($entity->dead_time);
+
+    module_invoke_all('entity_presave', 'brilliant_pr_project', $entity);
+    $primary_keys = $entity->pid ? 'pid' : array();
+    drupal_write_record('brilliant_pr_project', $entity, $primary_keys);
+    $invocation = 'entity_insert';
+    if (empty($primary_keys)) {
+      field_attach_insert('brilliant_pr_project', $entity); // defined in CORE modules/field/field.attach.inc
+    }
+    else {
+      field_attach_update('brilliant_pr_project', $entity);
+      $invocation = 'entity_update';
+    }
+    // Invoke either hook_entity_update() or hook_entity_insert().
+    module_invoke_all($invocation, 'brilliant_pr_project', $entity);
+    return $entity;
+  }
+
+  /**
+   * @param $entity
+   */
+
+  public function delete($entity) {
+    $this->delete_multiple(array($entity));
+  }
+
+  /**
+   * @param $entities
+   * @throws Exception
+   */
+
+  public function delete_multiple($entities) {
+    $pids = array();
+    if (!empty($entities)) {
+      $transaction = db_transaction();
+      try {
+        foreach ($entities as $entity) {
+          module_invoke_all('brilliant_pr_project_delete', $entity);
+          // Invoke hook_entity_delete().
+          module_invoke_all('entity_delete', $entity, 'brilliant_pr_project');
+          field_attach_delete('brilliant_pr_project', $entity);
+          $pids[] = $entity->pid;
+        }
+        db_delete('brilliant_pr_project')
+          ->condition('pid', $pids, 'IN')
+          ->execute();
+      }
+      catch (Exception $e) {
+        $transaction->rollback();
+        watchdog_exception('brilliant_pr_project', $e);
+        throw $e;
+      }
+    }
+  }
+}
+
+/**
+ * Class EntityBrilliantTaskBasicController
+ */
+
+class EntityBrilliantTaskBasicController
+  extends DrupalDefaultEntityController
+  implements EntityBrilliantTaskBasicControllerInterface {
+
+  /**
+   * @return stdClass
+   */
+  public function create() {
+    global $user;
+    $entity = new stdClass();
+    $entity->type = 'brilliant_pr_task';
+    $entity->tid = 0;
+    $entity->bundle_type = 'brilliant_pr_task_bundle';
+    $entity->title = '';
+    $entity->ref = '';
+    $entity->editor = '';
+    $entity->description = '';
+    $entity->opt_time = REQUEST_TIME;
+    $entity->dead_time = REQUEST_TIME;
+    $entity->curator = '';
+    $entity->implementor = '';
+    $entity->status = 0;
+    $entity->changed = REQUEST_TIME;
+    $entity->uid = $user->uid;
+    return $entity;
+  }
+
+  /**
+   * @param $entity
+   * @return mixed
+   */
+
+  public function save($entity) {
+    if (empty($entity->tid)) {
+      $entity->created = time();
+    }
+    $entity->changed = time();
+    $entity->opt_time = strtotime($entity->opt_time);
+    $entity->dead_time = strtotime($entity->dead_time);
+    module_invoke_all('entity_presave', 'brilliant_pr_task', $entity);
+    $primary_keys = $entity->tid ? 'tid' : array();
+    drupal_write_record('brilliant_pr_task', $entity, $primary_keys);
+    $invocation = 'entity_insert';
+    if (empty($primary_keys)) {
+      field_attach_insert('brilliant_pr_task', $entity); // defined in CORE modules/field/field.attach.inc
+    }
+    else {
+      field_attach_update('brilliant_pr_task', $entity);
+      $invocation = 'entity_update';
+    }
+    // Invoke either hook_entity_update() or hook_entity_insert().
+    module_invoke_all($invocation, 'brilliant_pr_task', $entity);
+    return $entity;
+  }
+
+  /**
+   * @param $entity
+   */
+
+  public function delete($entity) {
+    $this->delete_multiple(array($entity));
+  }
+
+  /**
+   * @param $entities
+   * @throws Exception
+   */
+
+  public function delete_multiple($entities) {
+    $tids = array();
+    if (!empty($entities)) {
+      $transaction = db_transaction();
+      try {
+        foreach ($entities as $entity) {
+          module_invoke_all('brilliant_pr_task_delete', $entity);
+          // Invoke hook_entity_delete().
+          module_invoke_all('brilliant_pr_entity_delete', $entity, 'brilliant_pr_task');
+          field_attach_delete('brilliant_pr_task', $entity);
+          $tids[] = $entity->tid;
+        }
+        db_delete('brilliant_pr_task')
+          ->condition('tid', $tids, 'IN')
+          ->execute();
+      }
+      catch (Exception $e) {
+        $transaction->rollback();
+        watchdog_exception('brilliant_pr_task', $e);
+        throw $e;
+      }
+    }
+  }
+}
+
+/**
+ * Cancel view history in user tab view
+ * @param $account
+ * @param $view_mode
+ * @param $langcode
+ */
+
+function brilliant_pr_user_view_alter(&$account, $view_mode, $langcode) {
+  unset($account['summary']);
+}
+
+/**
+ * list of templates
+ * @return array
+ * list of tpl files implemented
+ */
+function brilliant_pr_theme() {
+  $items = array();
+
+  $items['user_register_form'] = array(
+    'render element' => 'form',
+    'path' => drupal_get_path('theme', 'brilliant_pr') . '/theme/form',
+    'template' => 'user-register-form',
+
+  );
+  $items['user_login'] = array(
+    'render element' => 'form',
+    'path' => drupal_get_path('theme', 'brilliant_pr') . '/theme/form',
+    'template' => 'user-login',
+  );
+  $items['user_pass'] = array(
+    'render element' => 'form',
+    'path' => drupal_get_path('theme', 'brilliant_pr') . '/theme/form',
+    'template' => 'user-pass',
+  );
+  $items['user_login_block'] = array(
+    'render element' => 'form',
+    'path' => drupal_get_path('theme', 'brilliant_pr') . '/theme/form',
+    'template' => 'user-login-block',
+  );
+  $items['brilliant_pr_project_form'] = array(
+    'render element' => 'form',
+    'path' => drupal_get_path('theme', 'brilliant_pr') . '/theme/form',
+    'template' => 'brilliant-pr-project-form',
+  );
+  $items['brilliant_pr_task_form'] = array(
+    'render element' => 'form',
+    'path' => drupal_get_path('theme', 'brilliant_pr') . '/theme/form',
+    'template' => 'brilliant-pr-task',
+  );
+  $items['user_profile_form'] = array(
+    'render element' => 'form',
+    'path' => drupal_get_path('theme', 'brilliant_pr') . '/theme/form',
+    'template' => 'user-profile-form',
+  );
+  $items['brilliant_pr_project'] = array(
+    'path' => drupal_get_path('theme', 'brilliant_pr') . '/theme/views',
+    'variables' => array('element' => NULL),
+    'template' => 'brilliant_pr_project',
+  );
+  $items['brilliant_pr_task'] = array(
+    'path' => drupal_get_path('theme', 'brilliant_pr') . '/theme/views',
+    'variables' => array('element' => NULL),
+    'template' => 'brilliant_pr_task',
+  );
+
+  return $items;
+}
+
+/**
+ * @param $form
+ * user login theming
+ */
+
+function brilliant_pr_form_user_login_block_alter(&$form) {
+  // Remove the links provided by Drupal.
+  unset($form['links']);
+  $form['actions']['submit']["#attributes"]['class'][] = 'btn-success';
+  // Set a weight for form actions so other elements can be placed
+  // beneath them.
+  $form['actions']['#weight'] = 5;
+
+  // Shorter, inline request new password link.
+  $form['actions']['request_password'] = array(
+    '#markup' => l(t('Lost password'), 'user/password', array(
+      'attributes' => array(
+        'class' => 'btn-info btn form-submit login-front',
+        'title' => t('Request new password via e-mail.')
+      )
+    )),
+  );
+
+  // New sign up link, with 'cuter' text.
+  if (variable_get('user_register', USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL)) {
+    $form['signup'] = array(
+      '#prefix' => '<span id="register_link">',
+      '#suffix' => '</span>',
+      '#markup' => l(t('Register'), 'user/register', array(
+        'attributes' => array(
+          'id' => 'create-new-account',
+          'class' => 'btn-info btn form-submit login-front',
+          'title' => t('Create a new user account.')
+        )
+      )),
+      '#weight' => 10,
+    );
+  }
+}
+
+/**
+ * @param $form
+ */
+
+
+function brilliant_pr_form_user_register_form_alter(&$form) {
+  // Remove the links provided by Drupal.
+  unset($form['links']);
+  $form['actions']['submit']["#attributes"]['class'][] = 'btn-success';
+
+  // Set a weight for form actions so other elements can be placed
+  // beneath them.
+  $form['actions']['#weight'] = 100;
+//  var_dump($form['field_first_name'][LANGUAGE_NONE][0]);
+
+}
+
+// redirect to projects if no user
+global $user;
+if(arg(0) =='' && $user->uid == 0) {
+//  drupal_goto('entity/brilliant_pr_project');
+}
+/**
+ * @param $form
+ * @param $form_state
+ * @param $form_id
+ */
+
+function brilliant_pr_form_alter(&$form, &$form_state, $form_id) {
+  if ( TRUE === in_array( $form_id, array( 'user_login', 'user_login_block') ) ) {
+    $form['name']['#attributes']['placeholder'] = t( 'Username' );
+  $form['pass']['#attributes']['placeholder'] = t( 'Password' );
+  }
+  if($form_id == 'user_login_block') {
+    $form['name']['#title'] = _bootstrap_icon('user') . ' ' . t('Username');
+    $form['pass']['#title'] = _bootstrap_icon('lock') . ' ' . t('Password');
+    $form['actions']['submit']['#attributes']['class'][] = 'login-front';
+  }
+  if ($form_id == 'brilliant_pr_project_form') {
+    $form['submit']["#attributes"]['class'][] = 'btn-success';
+    $form['title']['#title_display'] = 'invisible';
+    $form['title']['#title'] = t('Project name');
+    $form['description']['#title_display'] = 'invisible';
+    $form['description']['#title'] = t('Description');
+    $form['customer_name']['#title'] = t('Contact person');
+    $form['customer_name']['#title_display'] = 'invisible';
+    $form['company']['#title_display'] = 'invisible';
+    $form['company']['#title'] = t('Client');
+    $form['curator']['#title_display'] = 'invisible';
+    $form['curator']['#title'] = t('Curator');
+    $form['opt_time']['#title_display'] = 'invisible';
+    $form['opt_time']['#title'] = t('Optimal date/time');
+    $form['dead_time']['#title_display'] = 'invisible';
+    $form['dead_time']['#title'] = t('Deadline date/time');
+    $form['dead_time']['#size'] = 25;
+    $form['opt_time']['#size'] = 25;
+    $form['editor']['#title_display'] = 'invisible';
+    $form['editor']['#prefix'] = '<div style="display:none;">';
+    $form['editor']['#suffix'] = '</div>';
+  }
+  if ($form_id == 'brilliant_pr_task_form') {
+    $form['submit']["#attributes"]['class'][] = 'btn-success';
+    $form['title']['#title_display'] = 'invisible';
+    $form['title']['#title'] = t('Task name');
+    $form['ref']['#title_display'] = 'invisible';
+    $form['ref']['#title'] = t('Project ref');
+    $form['description']['#title_display'] = 'invisible';
+    $form['description']['#title'] = t('Description');
+    $form['curator']['#title_display'] = 'invisible';
+    $form['curator']['#title'] = t('Curator');
+    $form['implementor']['#title_display'] = 'invisible';
+    $form['implementor']['#title'] = t('Implementor');
+    $form['editor']['#title_display'] = 'invisible';
+    $form['editor']['#prefix'] = '<div style="display:none;">';
+    $form['editor']['#suffix'] = '</div>';
+
+
+    $form['opt_time']['#title_display'] = 'invisible';
+    $form['opt_time']['#title'] = t('Optimal date');
+    $form['dead_time']['#title_display'] = 'invisible';
+    $form['dead_time']['#title'] = t('Deadline date');
+    $form['dead_time']['#size'] = 25;
+    $form['opt_time']['#size'] = 25;
+  }
+  if ($form_id == 'user_profile_form') {
+    $form['field_first_name'][LANGUAGE_NONE]['#title'] = t('Name');
+    $form['field_last_name'][LANGUAGE_NONE]['#title'] = t('Last name');
+    $form['account']['name']['#title_display'] = 'invisible';
+    $form['account']['current_pass']['#title_display'] = 'invisible';
+    $form['account']['mail']['#title_display'] = 'invisible';
+    $form['field_company']['und']['#title_display'] = 'invisible';
+  }
+  if($form_id == 'user_register_form') {
+    $form['field_first_name']['#attributes']['placeholder'] = t( 'First name' );
+    $form['field_last_name']['#attributes']['placeholder'] = t( 'Last name' );
+    $form['field_phone']['#attributes']['placeholder'] = t( 'Phone number' );
+  }
+  if($form_id == 'user_pass') {
+    $form['name']['#attributes']['placeholder'] = t( 'Username or email address' );
+  }
+
+}
+
+function brilliant_pr_menu_local_tasks_alter(&$data, $router_item, $root_path) {
+  // Add an action linking to node/add to all pages.
+  $arg = arg(3);
+  if(is_numeric(arg(3))) {
+    $tasks = brilliant_pr_task_load_multiple();
+    $counter = 0;
+    foreach ($tasks as $task) {
+      if ($arg == $task->ref && $task->status !=5) {
+        $counter++;
+      }
+    }
+    if($counter !=0) {
+      $title = $counter;
+      $data['tabs'][0]['output'][2]['#link']['title'] = t('Current tasks'). ' '.'<span id="task_counter" class="badge">'.$title.'</span>';
+    }
+    else {
+      $title = t('No tasks');
+      $data['tabs'][0]['output'][2]['#link']['title'] = t('Current tasks'). ' '.'<span id="task_counter" class="badge">'.$title.'</span>';
+    }
+
+  }
+  $data['tabs'][0]['output'][2]['#link']['localized_options']['html'] = TRUE;
+  // Add a tab linking to node/add to all pages.
+//  $data['tabs'][0]['output'][] = array(
+//    '#theme' => 'menu_local_task',
+//    '#link' => array(
+//      'title' => t('Example tab'),
+//      'href' => 'node/add',
+//      'localized_options' => array(
+//        'attributes' => array(
+//          'title' => t('Add new content'),
+//        ),
+//      ),
+//    ),
+//
+//    '#active' => ($router_item['path'] == $root_path),
+//  );
+}
+
+/**
+ * @param $vars
+ * @return string
+ */
+
+function brilliant_pr_date_popup($vars) {
+  $element = $vars['element'];
+  $attributes = !empty($element['#wrapper_attributes']) ? $element['#wrapper_attributes'] : array('class' => array());
+  $attributes['class'][] = 'container-inline-date';
+  // If there is no description, the floating date elements need some extra padding below them.
+  $wrapper_attributes = array('class' => array('date-padding'));
+  if (empty($element['date']['#description'])) {
+    $wrapper_attributes['class'][] = 'clearfix';
+  }
+  // Add an wrapper to mimic the way a single value field works, for ease in using #states.
+  if (isset($element['#children'])) {
+    $element['#children'] = '<div id="' . $element['#id'] . '" ' . drupal_attributes($wrapper_attributes) . '>' . $element['#children'] . '</div>';
+  }
+  return '<div ' . drupal_attributes($attributes) . '>' . theme('form_element', $element) . '</div>';
+}
