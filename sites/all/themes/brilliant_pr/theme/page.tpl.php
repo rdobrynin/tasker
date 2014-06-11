@@ -83,13 +83,13 @@
 <!--    --><?php //if ($page['sidebar_first']): ?>
 <!--      --><?php //print render($page['sidebar_first']); ?>
 <!--    --><?php //endif; ?>
- <div class="col-md-3">
+ <div class="col-md-2">
    <?php /* region--sidebar.tpl.php */ ?>
    <?php if ($page['sidebar_second']): ?>
      <?php print render($page['sidebar_second']); ?>
    <?php endif; ?>
  </div>
-    <div class="col-md-9">
+    <div class="col-md-10">
       <?php /* region--header.tpl.php */ ?>
       <?php print render($page['header']); ?>
       <?php /* region--navigation.tpl.php */ ?>
