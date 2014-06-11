@@ -85,7 +85,6 @@
     };
 
 
-
     $(window).load(function(){
         $('#login_modal').modal();
     });

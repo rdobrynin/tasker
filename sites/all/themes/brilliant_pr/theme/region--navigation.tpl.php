@@ -61,13 +61,13 @@ global $base_url;
           <div class="form-group">
             <input type="text" class="form-control search" placeholder="Search">
           </div>
-          <button type="submit" class="btn btn-success btn-search">Submit</button>
+          <button type="submit" class="btn btn-success btn-search"><span class="glyphicon glyphicon-search"></span></button>
         </form>
 
 
         <?php if ($user->uid != in_array('customer', $user->roles) && $user->uid != in_array('implementor', $user->roles)): ?>
           <div class="btn-group select-nav-top">
-            <button data-toggle="dropdown" class="btn dropdown-toggle" id="select-nav-top"><span class="glyphicon glyphicon-cog"></span><span class="caret"></span></button>
+            <button data-toggle="dropdown" class="btn dropdown-toggle" id="select-nav-top"><span class="glyphicon glyphicon-cog"></span></button>
             <ul class="dropdown-menu">
               <li><a href="<?php print $base_url;?>/admin/people"><?php print t('Administer users');?></a></li>
               <li><a href="<?php print $base_url;?>/admin/people/create"><?php print t('Add user');?></a></li>
