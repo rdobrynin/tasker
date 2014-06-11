@@ -75,25 +75,31 @@
 
 ?>
 
-<?php /* region--navigation.tpl.php */ ?>
-<?php if ($page['navigation']): ?>
-  <?php print render($page['navigation']); ?>
-<?php endif; ?>
+
 <div class="main-container container">
-  <?php /* region--header.tpl.php */ ?>
-  <?php print render($page['header']); ?>
+
   <div class="row">
-    <?php /* region--sidebar.tpl.php */ ?>
-    <?php if ($page['sidebar_first']): ?>
-      <?php print render($page['sidebar_first']); ?>
-    <?php endif; ?>
-    <?php /* region--sidebar.tpl.php */ ?>
-    <?php if ($page['sidebar_second']): ?>
-      <?php print render($page['sidebar_second']); ?>
-    <?php endif; ?>
-    <?php /* region--content.tpl.php */ ?>
-    <?php print render($page['content']);
-    ?>
+<!--    --><?php ///* region--sidebar.tpl.php */ ?>
+<!--    --><?php //if ($page['sidebar_first']): ?>
+<!--      --><?php //print render($page['sidebar_first']); ?>
+<!--    --><?php //endif; ?>
+ <div class="col-md-3">
+   <?php /* region--sidebar.tpl.php */ ?>
+   <?php if ($page['sidebar_second']): ?>
+     <?php print render($page['sidebar_second']); ?>
+   <?php endif; ?>
+ </div>
+    <div class="col-md-9">
+      <?php /* region--header.tpl.php */ ?>
+      <?php print render($page['header']); ?>
+      <?php /* region--navigation.tpl.php */ ?>
+      <?php if ($page['navigation']): ?>
+        <?php print render($page['navigation']); ?>
+      <?php endif; ?>
+      <?php /* region--content.tpl.php */ ?>
+      <?php print render($page['content']);?>
+    </div>
+
 
   </div>
 </div>
