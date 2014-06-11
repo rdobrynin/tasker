@@ -57,7 +57,7 @@ global $base_url;
 
 
 <!--        SEARCH FORM-->
-        <form class="navbar-form navbar-right" role="search" id="search_form">
+        <form class="navbar-form navbar-left" role="search" id="search_form">
           <div class="form-group">
             <input type="text" class="form-control search" placeholder="Search">
           </div>
