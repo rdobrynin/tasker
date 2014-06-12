@@ -96,7 +96,7 @@ function brilliant_pr_menu_link(array $variables) {
       }
     }
     if($element["#href"] == 'user/logout'){
-      $element['#title'] = '<span>'._bootstrap_icon('log-out').'</span>'.' '.$element['#title'];
+      $element['#title'] = '<span class="logout_nav">'._bootstrap_icon('log-out').'</span>'.' '.$element['#title'];
     }
     if($element["#href"] == 'user/login'){
       $element['#title'] = _bootstrap_icon('log-in').' '.$element['#title'];
