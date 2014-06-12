@@ -3399,7 +3399,7 @@ function brilliant_pr_block_view($delta = '') {
     $block_content .= '<span class="approve_label"></span>' . t('For approve') . ' (' . $counter_ap . ')';
     $block_content .= '</br>';
     $query = db_select('brilliant_pr_project', 'p')
-      ->condition('status', 3) //Only processing projects
+      ->condition('status', 3) //Only completed projects
       ->fields('p', array(
         'pid',
         'title',
@@ -3424,6 +3424,38 @@ function brilliant_pr_block_view($delta = '') {
       }
     }
     $block_content .= '<span class="complete_label"></span>' . t('Complete') . ' (' . $counter_comp . ')';
+    $block_content .= '</br>';
+//    OVERDUE PROJECTS
+
+    $query = db_select('brilliant_pr_project', 'p')
+      ->condition('status', 1) //Only processing projects
+      ->fields('p', array(
+        'pid',
+        'title',
+        'status',
+        'created',
+        'changed',
+        'opt_time',
+        'dead_time',
+        'uid',
+        'customer_name',
+        'curator',
+      ));
+    $results = $query
+      ->execute();
+
+    $counter_over = 0; // make counter in cycle (to know how many tasks per project)
+    foreach($results as $entity) {
+      if ($user->uid != 0) {
+        if($user->name == $entity->curator || $user->name == $entity->customer_name || in_array('administrator', $user->roles)) {
+          if(time() < $entity->dead_time) {
+            $counter_over++;
+          }
+
+        }
+      }
+    }
+    $block_content .= '<span class="overdue_label"></span>' . t('Overdue') . ' (' . $counter_over . ')';
     $block['content'] = $block_content;
   }
   if ($delta == 'brilliant_users_online') {
@@ -3441,8 +3473,6 @@ function brilliant_pr_block_view($delta = '') {
     $block['subject'] = t('Task statistics');
     $block['content'] = $block_content;
   }
-
-
   return $block;
 }
 
