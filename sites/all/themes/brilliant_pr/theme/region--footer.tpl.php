@@ -35,6 +35,6 @@
       <a href="#top"><span></span><?php print t('To top');?><span></span></a>
     </p>
     <!--        --><?php //print format_date( time());?>
-    <span class="time-top"></span>
+<!--    <span class="time-top"></span>-->
   </footer>
 <?php endif; ?>
