@@ -3331,6 +3331,7 @@ function brilliant_pr_date_popup($vars) {
  */
 function brilliant_pr_block_info() {
   $blocks['project_statistics'] = array('info' => t('Project statistics'));
+  $blocks['task_statistics'] = array('info' => t('Task statistics'));
   $blocks['brilliant_users_online'] = array('info' => t('Users online'));
   return $blocks;
 }
@@ -3426,17 +3427,22 @@ function brilliant_pr_block_view($delta = '') {
     $block['content'] = $block_content;
   }
   if ($delta == 'brilliant_users_online') {
-
-
     $user_item =  user_load( $user->uid);
     //$block_content = 'test';
-    $block_content = array(
-      '#theme' => 'user_picture',
-      '#account' => $user_item,
-    );
+
+    $block_content = '<span class="avatar">'.theme('user_picture', array('account' =>$user_item)).'</span>';
+    $block_content .= '<span class="avatar_user_name">'.get_name($user->uid).'</span>';
     $block['subject'] = t('Users online');
     $block['content'] = $block_content;
   }
+
+  if ($delta == 'task_statistics') {
+    $block_content = 'test';
+    $block['subject'] = t('Task statistics');
+    $block['content'] = $block_content;
+  }
+
+
   return $block;
 }
 
@@ -3465,11 +3471,10 @@ function brilliant_pr_preprocess_user_picture(&$variables) {
       $filepath = variable_get('user_picture_default', '');
     }
     if (isset($filepath)) {
-      $alt = t("@user's picture", array('@user' => format_username($account)));
+      $alt = get_name($user->uid);
       // If the image does not have a valid Drupal scheme (for eg. HTTP),
       // don't load image styles.
       if (module_exists('image') && file_valid_uri($filepath) && $style = variable_get('user_picture_style', '')) {
-        $alt = get_name($user->uid);
         $variables['user_picture'] = theme('image_style', array('style_name' => $style, 'path' => $filepath, 'alt' => $alt, 'title' => $alt));
       }
       else {
