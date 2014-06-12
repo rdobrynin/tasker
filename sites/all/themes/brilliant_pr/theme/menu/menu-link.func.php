@@ -81,7 +81,19 @@ function brilliant_pr_menu_link(array $variables) {
 
   if($element["#theme"] == 'menu_link__user_menu'){
     if($element["#href"] == 'user'){
-      $element['#title'] = '<span>'._bootstrap_icon('user').'</span>'.' '.'<span class="link">'.get_name($user->uid).'</span>';
+
+      if($user->uid == in_array('curator', $user->roles) ) {
+        $element['#title'] = '<div class="user_role_label">'.'M'.'</div>'.' '.'<span class="link user_load_role_name">'.get_name($user->uid).'</span>';
+      }
+      else if ($user->uid == in_array('administrator', $user->roles)) {
+        $element['#title'] = '<div class="user_role_label">'.'A'.'</div>'.' '.'<span class="link user_load_role_name">'.get_name($user->uid).'</span>';
+      }
+      else if ($user->uid == in_array('implementor', $user->roles)) {
+        $element['#title'] = '<div class="user_role_label">'.'I'.'</div>'.' '.'<span class="link user_load_role_name">'.get_name($user->uid).'</span>';
+      }
+      else if ($user->uid == in_array('customer', $user->roles)) {
+        $element['#title'] = '<div class="user_role_label">'.'C'.'</div>'.' '.'<span class="link user_load_role_name">'.get_name($user->uid).'</span>';
+      }
     }
     if($element["#href"] == 'user/logout'){
       $element['#title'] = '<span>'._bootstrap_icon('log-out').'</span>'.' '.$element['#title'];
