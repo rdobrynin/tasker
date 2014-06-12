@@ -3326,16 +3326,17 @@ function brilliant_pr_date_popup($vars) {
   return '<div ' . drupal_attributes($attributes) . '>' . theme('form_element', $element) . '</div>';
 }
 
-/** Implement hoo_bloc_info
+/** Implement hook_block_info
  * @return mixed
  */
 function brilliant_pr_block_info() {
   $blocks['project_statistics'] = array('info' => t('Project statistics'));
+  $blocks['brilliant_users_online'] = array('info' => t('Users online'));
   return $blocks;
 }
 
 
-/** Implement hoo_bloc_view
+/** Implement hook_block_view
  * @param string $delta
  * @return array
  */
@@ -3365,8 +3366,8 @@ function brilliant_pr_block_view($delta = '') {
       ->execute();
     $counter_pr = 0; // make counter in cycle (to know how many tasks per project)
     foreach($results as $entity) {
-      if ($user->name != NULL) {
-        if ($user->name == $entity->curator || $user->name == $entity->customer_name) {
+      if ($user->uid != 0) {
+        if ($user->name == $entity->curator || $user->name == $entity->customer_name || in_array('administrator', $user->roles)) {
           $counter_pr++;
         }
       }
@@ -3391,8 +3392,10 @@ function brilliant_pr_block_view($delta = '') {
       ->execute();
     $counter_ap = 0; // make counter in cycle (to know how many tasks per project)
     foreach($results as $entity) {
-      if($user->name == $entity->curator || $user->name == $entity->customer_name) {
+      if ($user->uid != 0) {
+      if($user->name == $entity->curator || $user->name == $entity->customer_name || in_array('administrator', $user->roles)) {
         $counter_ap ++;
+      }
       }
     }
     $block_content .= '<span class="approve_label"></span>' . t('For approve') . ' (' . $counter_ap . ')';
@@ -3416,13 +3419,27 @@ function brilliant_pr_block_view($delta = '') {
       ->execute();
     $counter_comp = 0; // make counter in cycle (to know how many tasks per project)
     foreach($results as $entity) {
-      if($user->name == $entity->curator || $user->name == $entity->customer_name) {
+      if ($user->uid != 0) {
+      if($user->name == $entity->curator || $user->name == $entity->customer_name || in_array('administrator', $user->roles)) {
         $counter_comp++;
+      }
       }
     }
     $block_content .= '<span class="complete_label"></span>' . t('Complete') . ' (' . $counter_comp . ')';
     $block['content'] = $block_content;
   }
 
+  if ($delta == 'brilliant_users_online') {
+//    $interval = time() - variable_get('user_block_seconds_online', 900);
+//var_dump($interval);
+//    user_statistics();
+
+    $block['subject'] = t('Users online');
+    $block_content = 'test';
+    $block['content'] = $block_content;
+  }
+
   return $block;
 }
+
+
