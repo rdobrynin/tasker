@@ -3332,7 +3332,7 @@ function brilliant_pr_date_popup($vars) {
 function brilliant_pr_block_info() {
   $blocks['project_statistics'] = array('info' => t('Project statistics'));
   $blocks['task_statistics'] = array('info' => t('Task statistics'));
-  $blocks['brilliant_users_online'] = array('info' => t('Users online'));
+  $blocks['brilliant_user_avatar_block'] = array('info' => t('User avatar'));
   return $blocks;
 }
 
@@ -3458,12 +3458,28 @@ function brilliant_pr_block_view($delta = '') {
     $block_content .= '<span class="overdue_label"></span>' . t('Overdue') . ' (' . $counter_over . ')';
     $block['content'] = $block_content;
   }
-  if ($delta == 'brilliant_users_online') {
+  if ($delta == 'brilliant_user_avatar_block') {
     $user_item =  user_load( $user->uid);
     //$block_content = 'test';
 
     $block_content = '<span class="avatar">'.theme('user_picture', array('account' =>$user_item)).'</span>';
     $block_content .= '<span class="avatar_user_name">'.get_name($user->uid).'</span>';
+
+    if($user->uid == in_array('curator', $user->roles) ) {
+      $block_content .= '<div class="user_role_label">'.'M'.'</div>';
+    }
+    else if ($user->uid == in_array('administrator', $user->roles)) {
+      $block_content .= '<div class="user_role_label">'.'A'.'</div>';
+    }
+    else if ($user->uid == in_array('implementor', $user->roles)) {
+      $block_content .= '<div class="user_role_label">'.'I'.'</div>';
+    }
+    else if ($user->uid == in_array('customer', $user->roles)) {
+      $block_content .= '<div class="user_role_label">'.'C'.'</div>';
+    }
+
+
+
     $block['subject'] = t('Users online');
     $block['content'] = $block_content;
   }
