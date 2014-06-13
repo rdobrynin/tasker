@@ -28,7 +28,7 @@ $form['actions']['submit']['#id'] = 'login_btn';
         </div>
       </div>
       <div class="modal-footer" id="login_footer">
-        <div style="float: left;"><a href="user/refister"><?php print t('Create new account');?></a></div>
+        <div style="float: left;"><a href="user/register"><?php print t('Create new account');?></a></div>
       <div style="float: right;"><a href="user/password"><?php print t('Request new password');?></a></div>
       </div>
     </div><!-- /.modal-content -->
