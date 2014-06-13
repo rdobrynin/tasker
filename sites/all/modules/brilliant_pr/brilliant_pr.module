@@ -3283,7 +3283,7 @@ function brilliant_pr_menu_local_tasks_alter(&$data, $router_item, $root_path) {
     }
     else {
       $title = t('No tasks');
-      $data['tabs'][0]['output'][2]['#link']['title'] = t('Current tasks'). ' '.'<span id="task_counter" class="badge">'.$title.'</span>';
+      $data['tabs'][0]['output'][2]['#link']['title'] = t('Current tasks'). ' '.'<span id="task_counter_empty" class="badge">'.$title.'</span>';
     }
 
   }
