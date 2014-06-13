@@ -3331,7 +3331,6 @@ function brilliant_pr_date_popup($vars) {
  */
 function brilliant_pr_block_info() {
   $blocks['project_statistics'] = array('info' => t('Project statistics'));
-  $blocks['task_statistics'] = array('info' => t('Task statistics'));
   $blocks['brilliant_user_avatar_block'] = array('info' => t('User avatar'));
   return $blocks;
 }
@@ -3478,17 +3477,10 @@ function brilliant_pr_block_view($delta = '') {
       $block_content .= '<div class="user_role_label">'.'C'.'</div>';
     }
 
-
-
     $block['subject'] = t('Users online');
     $block['content'] = $block_content;
   }
 
-  if ($delta == 'task_statistics') {
-    $block_content = 'test';
-    $block['subject'] = t('Task statistics');
-    $block['content'] = $block_content;
-  }
   return $block;
 }
 

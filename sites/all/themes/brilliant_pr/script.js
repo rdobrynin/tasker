@@ -101,20 +101,20 @@
                 }
         }
     };
-    Drupal.behaviors.scroll2 = {
-        attach : function(context, settings) {
-            var el=$('#menu_float');
-            var elpos=el.offset().top;
-            $(function () {
-                $(window).scroll(function () {
-
-                    var y=$(this).scrollTop();
-                    if(y<elpos){el.stop().animate({'top':0},800);}
-                    else{el.stop().animate({'top':y-elpos},800);}
-
-                });
-            });
-        }
-    };
+//    Drupal.behaviors.scroll2 = {
+//        attach : function(context, settings) {
+//            var el=$('#menu_float');
+//            var elpos=el.offset().top;
+//            $(function () {
+//                $(window).scroll(function () {
+//
+//                    var y=$(this).scrollTop();
+//                    if(y<elpos){el.stop().animate({'top':0},800);}
+//                    else{el.stop().animate({'top':y-elpos},800);}
+//
+//                });
+//            });
+//        }
+//    };
 
 })(jQuery);
