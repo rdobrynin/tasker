@@ -3539,4 +3539,11 @@ function brilliant_pr_preprocess_user_picture(&$variables) {
   }
 }
 
+///**
+// * Implements hook_admin_paths_alter().
+// */
+//function brilliant_pr_admin_paths_alter(&$paths) {
+//  $paths['entity/brilliant_pr_project/basic/*'] = TRUE;
+//}
+//
 
