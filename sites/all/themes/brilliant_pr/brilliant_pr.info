@@ -25,6 +25,7 @@ regions[page_bottom]    = 'Page bottom'
 ;;;;;;;;;;;;;;;;;;;;;
 stylesheets[all][] = less/style.less
 stylesheets[all][] = css/style.css
+stylesheets[all][] = css/bootstrap-select.min.css
 
 
 ; For information on choosing the desired method, please read the Drupal
@@ -52,6 +53,7 @@ stylesheets[all][] = css/style.css
 ; scripts[] = 'bootstrap/js/tab.js'
 ; scripts[] = 'bootstrap/js/transition.js'
 scripts[] = script.js
+scripts[] = bootstrap-select.min.js
 
 ;
 ; ; Disable BootstrapCDN if using Bootstrap source files in your sub-theme.

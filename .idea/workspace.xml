@@ -5,21 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="35fb9428-2f24-4903-93a1-29664c339dbb" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/fonts/FontAwesome.otf" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/fonts/fontawesome-webfont.eot" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/fonts/fontawesome-webfont.ttf" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/fonts/fontawesome-webfont.woff" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/fonts/font-awesome.min.css" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/fonts/fontawesome-webfont.svg" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/sites/all/modules/brilliant_pr/overlay.js" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/css/bootstrap-select.css" afterPath="" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/sites/all/modules/brilliant_pr/overlay.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/brilliant_pr.info" afterPath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/brilliant_pr.info" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/brilliant_pr/brilliant_pr.module" afterPath="$PROJECT_DIR$/sites/all/modules/brilliant_pr/brilliant_pr.module" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/less/footer.less" afterPath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/less/footer.less" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/less/form.less" afterPath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/less/form.less" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/theme/menu/menu-link.func.php" afterPath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/theme/menu/menu-link.func.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/less/menu_nav.less" afterPath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/less/menu_nav.less" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/modules/overlay/overlay.tpl.php" afterPath="$PROJECT_DIR$/modules/overlay/overlay.tpl.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/theme/region--navigation.tpl.php" afterPath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/theme/region--navigation.tpl.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/script.js" afterPath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/script.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
@@ -45,10 +35,19 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
+      <file leaf-file-name="footer.less" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/less/footer.less">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="30" column="14" selection-start="535" selection-end="535" vertical-scroll-proportion="-10.384615" vertical-offset="0" max-vertical-offset="1667">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="brilliant_pr.info" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/brilliant_pr.info">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="25" column="36" selection-start="616" selection-end="616" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2188">
+            <state line="23" column="14" selection-start="557" selection-end="557" vertical-scroll-proportion="0.0" vertical-offset="54" max-vertical-offset="2223">
               <folding />
             </state>
           </provider>
@@ -57,7 +56,7 @@
       <file leaf-file-name="region--navigation.tpl.php" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/theme/region--navigation.tpl.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="39" column="151" selection-start="1648" selection-end="1685" vertical-scroll-proportion="18.0" vertical-offset="756" max-vertical-offset="2413">
+            <state line="78" column="23" selection-start="3783" selection-end="3783" vertical-scroll-proportion="-18.666666" vertical-offset="468" max-vertical-offset="2273">
               <folding />
             </state>
           </provider>
@@ -72,31 +71,62 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="script.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/script.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="7" column="36" selection-start="278" selection-end="278" vertical-scroll-proportion="0.0" vertical-offset="1458" max-vertical-offset="3124">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="brilliant_pr.module" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="brilliant_pr.module" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/sites/all/modules/brilliant_pr/brilliant_pr.module">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="3555" column="0" selection-start="114932" selection-end="114932" vertical-scroll-proportion="-27.703703" vertical-offset="63206" max-vertical-offset="64945">
+            <state line="3556" column="32" selection-start="115232" selection-end="115232" vertical-scroll-proportion="0.5925926" vertical-offset="63432" max-vertical-offset="65106">
               <folding>
-                <marker date="1403008893999" expanded="false" signature="103318:103331" placeholder="..." />
-                <marker date="1403008893999" expanded="false" signature="104114:104127" placeholder="..." />
+                <marker date="1403011315495" expanded="false" signature="103454:103467" placeholder="..." />
+                <marker date="1403011315495" expanded="false" signature="104445:104458" placeholder="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="menu-link.func.php" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="script.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/script.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="107" column="29" selection-start="0" selection-end="4199" vertical-scroll-proportion="0.0" vertical-offset="1458" max-vertical-offset="3285">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="overlay.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/sites/all/modules/brilliant_pr/overlay.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="3" column="11" selection-start="46" selection-end="46" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1035">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="region--footer.tpl.php" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/theme/region--footer.tpl.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="40" column="0" selection-start="1398" selection-end="1398" vertical-scroll-proportion="-10.0" vertical-offset="0" max-vertical-offset="1224">
+              <folding>
+                <marker date="1402563464000" expanded="true" signature="950:1380" placeholder="..." />
+                <marker date="1402563464000" expanded="true" signature="1021:1145" placeholder="..." />
+                <marker date="1402563464000" expanded="true" signature="1182:1269" placeholder="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="menu-link.func.php" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/theme/menu/menu-link.func.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="58" column="65" selection-start="2307" selection-end="2307" vertical-scroll-proportion="0.46248716" vertical-offset="540" max-vertical-offset="2809">
+            <state line="61" column="105" selection-start="2583" selection-end="2583" vertical-scroll-proportion="-32.666668" vertical-offset="162" max-vertical-offset="2808">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="form.less" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/less/form.less">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="153" column="28" selection-start="2037" selection-end="2037" vertical-scroll-proportion="-2.025" vertical-offset="2592" max-vertical-offset="4771">
               <folding />
             </state>
           </provider>
@@ -134,19 +164,19 @@
         <option value="$PROJECT_DIR$/sites/all/themes/brilliant_pr/less/content.less" />
         <option value="$PROJECT_DIR$/sites/all/themes/brilliant_pr/less/block.less" />
         <option value="$PROJECT_DIR$/sites/all/themes/brilliant_pr/less/menu_nav.less" />
-        <option value="$PROJECT_DIR$/sites/all/themes/brilliant_pr/less/form.less" />
         <option value="$PROJECT_DIR$/sites/all/themes/brilliant_pr/theme/form/brilliant-pr-task.tpl.php" />
         <option value="$PROJECT_DIR$/modules/overlay/overlay-child.js" />
         <option value="$PROJECT_DIR$/sites/all/modules/brilliant_pr/script.js" />
-        <option value="$PROJECT_DIR$/sites/all/modules/brilliant_pr/overlay.js" />
+        <option value="$PROJECT_DIR$/sites/all/themes/brilliant_pr/css/bootstrap-select.css" />
+        <option value="$PROJECT_DIR$/sites/all/themes/brilliant_pr/theme/form/brilliant-pr-project-form.tpl.php" />
+        <option value="$PROJECT_DIR$/sites/all/themes/brilliant_pr/theme/menu/menu-link.func.php" />
+        <option value="$PROJECT_DIR$/sites/all/themes/brilliant_pr/theme/region--navigation.tpl.php" />
+        <option value="$PROJECT_DIR$/sites/all/themes/brilliant_pr/less/form.less" />
+        <option value="$PROJECT_DIR$/sites/all/themes/brilliant_pr/brilliant_pr.info" />
         <option value="$PROJECT_DIR$/sites/all/themes/brilliant_pr/script.js" />
         <option value="$PROJECT_DIR$/sites/all/themes/brilliant_pr/less/footer.less" />
-        <option value="$PROJECT_DIR$/sites/all/themes/brilliant_pr/css/bootstrap-select.css" />
-        <option value="$PROJECT_DIR$/sites/all/themes/brilliant_pr/brilliant_pr.info" />
+        <option value="$PROJECT_DIR$/sites/all/modules/brilliant_pr/overlay.js" />
         <option value="$PROJECT_DIR$/sites/all/modules/brilliant_pr/brilliant_pr.module" />
-        <option value="$PROJECT_DIR$/sites/all/themes/brilliant_pr/theme/form/brilliant-pr-project-form.tpl.php" />
-        <option value="$PROJECT_DIR$/sites/all/themes/brilliant_pr/theme/region--navigation.tpl.php" />
-        <option value="$PROJECT_DIR$/sites/all/themes/brilliant_pr/theme/menu/menu-link.func.php" />
       </list>
     </option>
   </component>
@@ -338,11 +368,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="theme" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="menu" />
+              <option name="myItemId" value="less" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -372,7 +398,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="fonts" />
+              <option name="myItemId" value="css" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -600,6 +626,11 @@
       <recent name="$PROJECT_DIR$/sites/all/modules/brilliant_pr" />
       <recent name="$PROJECT_DIR$/sites/all/themes/brilliant_pr/less" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/sites/all/themes/brilliant_pr" />
+      <recent name="$PROJECT_DIR$/sites/all/themes/brilliant_pr/theme" />
+      <recent name="$PROJECT_DIR$/sites/all/themes/brilliant_pr/theme/js" />
+    </key>
   </component>
   <component name="RunManager">
     <configuration default="true" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
@@ -636,7 +667,11 @@
       <created>1402994365990</created>
       <updated>1402994365990</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="reformed theme">
+      <created>1403009615181</created>
+      <updated>1403009615181</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -644,23 +679,23 @@
     <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32930514" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22356495" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22373393" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32879817" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32966137" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Remote Host" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Jenkins" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20277438" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20277438" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32879817" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
@@ -680,7 +715,8 @@
     </option>
     <MESSAGE value="added files" />
     <MESSAGE value="reformed style css" />
-    <option name="LAST_COMMIT_MESSAGE" value="reformed style css" />
+    <MESSAGE value="reformed theme" />
+    <option name="LAST_COMMIT_MESSAGE" value="reformed theme" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -919,38 +955,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/less/form.less">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="201" column="19" selection-start="2853" selection-end="2853" vertical-scroll-proportion="0.79746836" vertical-offset="2862" max-vertical-offset="4800">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/theme/region--footer.tpl.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="40" column="0" selection-start="1398" selection-end="1398" vertical-scroll-proportion="0.27749228" vertical-offset="0" max-vertical-offset="1225">
-          <folding>
-            <marker date="1402563464000" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1402563464000" expanded="true" signature="-1:-1" placeholder="..." />
-            <marker date="1402563464000" expanded="true" signature="-1:-1" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/less/footer.less">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="1" selection-start="483" selection-end="483" vertical-scroll-proportion="0.51265824" vertical-offset="0" max-vertical-offset="1650">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/script.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="36" selection-start="278" selection-end="278" vertical-scroll-proportion="0.0" vertical-offset="1458" max-vertical-offset="3124">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/theme/form/brilliant-pr-project-form.tpl.php">
       <provider selected="true" editor-type-id="text-editor">
         <state line="93" column="16" selection-start="3596" selection-end="3596" vertical-scroll-proportion="-18.0" vertical-offset="1188" max-vertical-offset="3727">
@@ -958,34 +962,73 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/sites/all/modules/brilliant_pr/brilliant_pr.module">
+    <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/theme/menu/menu-link.func.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="3555" column="0" selection-start="114932" selection-end="114932" vertical-scroll-proportion="-27.703703" vertical-offset="63206" max-vertical-offset="64945">
-          <folding>
-            <marker date="1403008893999" expanded="false" signature="103318:103331" placeholder="..." />
-            <marker date="1403008893999" expanded="false" signature="104114:104127" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/brilliant_pr.info">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="25" column="36" selection-start="616" selection-end="616" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2188">
+        <state line="61" column="105" selection-start="2583" selection-end="2583" vertical-scroll-proportion="-32.666668" vertical-offset="162" max-vertical-offset="2808">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/theme/region--navigation.tpl.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="39" column="151" selection-start="1648" selection-end="1685" vertical-scroll-proportion="18.0" vertical-offset="756" max-vertical-offset="2413">
+        <state line="78" column="23" selection-start="3783" selection-end="3783" vertical-scroll-proportion="-18.666666" vertical-offset="468" max-vertical-offset="2273">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/theme/menu/menu-link.func.php">
+    <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/less/form.less">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="58" column="65" selection-start="2307" selection-end="2307" vertical-scroll-proportion="0.46248716" vertical-offset="540" max-vertical-offset="2809">
+        <state line="153" column="28" selection-start="2037" selection-end="2037" vertical-scroll-proportion="-2.025" vertical-offset="2592" max-vertical-offset="4771">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/brilliant_pr.info">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="23" column="14" selection-start="557" selection-end="557" vertical-scroll-proportion="0.0" vertical-offset="54" max-vertical-offset="2223">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/theme/region--footer.tpl.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="40" column="0" selection-start="1398" selection-end="1398" vertical-scroll-proportion="-10.0" vertical-offset="0" max-vertical-offset="1224">
+          <folding>
+            <marker date="1402563464000" expanded="true" signature="950:1380" placeholder="..." />
+            <marker date="1402563464000" expanded="true" signature="1021:1145" placeholder="..." />
+            <marker date="1402563464000" expanded="true" signature="1182:1269" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/less/footer.less">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="30" column="14" selection-start="535" selection-end="535" vertical-scroll-proportion="-10.384615" vertical-offset="0" max-vertical-offset="1667">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/script.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="107" column="29" selection-start="0" selection-end="4199" vertical-scroll-proportion="0.0" vertical-offset="1458" max-vertical-offset="3285">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sites/all/modules/brilliant_pr/overlay.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="3" column="11" selection-start="46" selection-end="46" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1035">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sites/all/modules/brilliant_pr/brilliant_pr.module">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="3556" column="32" selection-start="115232" selection-end="115232" vertical-scroll-proportion="0.5925926" vertical-offset="63432" max-vertical-offset="65106">
+          <folding>
+            <marker date="1403011315495" expanded="false" signature="103454:103467" placeholder="..." />
+            <marker date="1403011315495" expanded="false" signature="104445:104458" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
