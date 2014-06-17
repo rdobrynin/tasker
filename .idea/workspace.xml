@@ -2,13 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="35fb9428-2f24-4903-93a1-29664c339dbb" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/brilliant_pr.info" afterPath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/brilliant_pr.info" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/sites/all/modules/brilliant_pr/overlay.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/modules/brilliant_pr/brilliant_pr.module" afterPath="$PROJECT_DIR$/sites/all/modules/brilliant_pr/brilliant_pr.module" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/less/footer.less" afterPath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/less/footer.less" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/less/form.less" afterPath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/less/form.less" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/less/menu_nav.less" afterPath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/less/menu_nav.less" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/theme/region--navigation.tpl.php" afterPath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/theme/region--navigation.tpl.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/script.js" afterPath="$PROJECT_DIR$/sites/all/themes/brilliant_pr/script.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="tasker.iws" />
@@ -32,15 +27,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="menu_nav.less" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/less/menu_nav.less">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="171" column="0" selection-start="3051" selection-end="3051" vertical-scroll-proportion="-5.4038463" vertical-offset="2797" max-vertical-offset="4637">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="footer.less" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/less/footer.less">
           <provider selected="true" editor-type-id="text-editor">
@@ -62,7 +48,16 @@
       <file leaf-file-name="script.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/script.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="98" column="44" selection-start="3440" selection-end="3440" vertical-scroll-proportion="0.0" vertical-offset="1296" max-vertical-offset="3321">
+            <state line="109" column="15" selection-start="3568" selection-end="3673" vertical-scroll-proportion="0.0" vertical-offset="1620" max-vertical-offset="3321">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="overlay.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/sites/all/modules/brilliant_pr/overlay.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="6" column="11" selection-start="150" selection-end="150" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1089">
               <folding />
             </state>
           </provider>
@@ -71,11 +66,20 @@
       <file leaf-file-name="brilliant_pr.module" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/sites/all/modules/brilliant_pr/brilliant_pr.module">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="3239" column="22" selection-start="104186" selection-end="104186" vertical-scroll-proportion="0.7962963" vertical-offset="57528" max-vertical-offset="64926">
+            <state line="3563" column="0" selection-start="115287" selection-end="115287" vertical-scroll-proportion="0.44444445" vertical-offset="63702" max-vertical-offset="65088">
               <folding>
-                <marker date="1402997233083" expanded="false" signature="103454:103467" placeholder="..." />
-                <marker date="1402997233083" expanded="false" signature="104445:104458" placeholder="..." />
+                <marker date="1402999257911" expanded="true" signature="103454:103467" placeholder="..." />
+                <marker date="1402999257911" expanded="true" signature="104445:104458" placeholder="..." />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="overlay-child.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/modules/overlay/overlay-child.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="90" column="28" selection-start="2977" selection-end="2977" vertical-scroll-proportion="0.0" vertical-offset="1296" max-vertical-offset="4509">
+              <folding />
             </state>
           </provider>
         </entry>
@@ -122,15 +126,6 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="block.less" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/less/block.less">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="78" column="0" selection-start="1454" selection-end="1454" vertical-scroll-proportion="-8.442307" vertical-offset="965" max-vertical-offset="2424">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
     </leaf>
   </component>
   <component name="FindManager">
@@ -171,6 +166,9 @@
         <option value="$PROJECT_DIR$/sites/all/themes/brilliant_pr/theme/form/brilliant-pr-task.tpl.php" />
         <option value="$PROJECT_DIR$/sites/all/themes/brilliant_pr/brilliant_pr.info" />
         <option value="$PROJECT_DIR$/sites/all/themes/brilliant_pr/script.js" />
+        <option value="$PROJECT_DIR$/modules/overlay/overlay-child.js" />
+        <option value="$PROJECT_DIR$/sites/all/modules/brilliant_pr/script.js" />
+        <option value="$PROJECT_DIR$/sites/all/modules/brilliant_pr/overlay.js" />
         <option value="$PROJECT_DIR$/sites/all/modules/brilliant_pr/brilliant_pr.module" />
       </list>
     </option>
@@ -776,11 +774,12 @@
     <property name="LayoutCode.rearrangeEntriesLESS" value="false" />
     <property name="FullScreen" value="false" />
     <property name="LayoutCode.rearrangeEntriesPHP" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/sites/all/modules/brilliant_pr" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/sites/all/themes/brilliant_pr/less" />
       <recent name="$PROJECT_DIR$/sites/all/modules/brilliant_pr" />
+      <recent name="$PROJECT_DIR$/sites/all/themes/brilliant_pr/less" />
     </key>
   </component>
   <component name="RunManager">
@@ -868,31 +867,6 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/theme/brilliant-pr-project.tpl.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="79" column="2" selection-start="3344" selection-end="3344" vertical-scroll-proportion="0.0" vertical-offset="1422" max-vertical-offset="3204" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/theme/form/user-login-block.tpl.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="2" selection-start="304" selection-end="304" vertical-scroll-proportion="0.0" vertical-offset="108" max-vertical-offset="540" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/sites/default/settings.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="225" column="4" selection-start="7969" selection-end="7969" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="10242" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/sites/all/modules/brilliant_pr/brilliant_pr.module">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="187" column="19" selection-start="4856" selection-end="4856" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="59904">
-          <folding>
-            <marker date="1402997233083" expanded="false" signature="103454:103467" placeholder="..." />
-            <marker date="1402997233083" expanded="false" signature="104445:104458" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/sites/all/modules/devel/devel.module">
       <provider selected="true" editor-type-id="text-editor">
         <state line="1286" column="2" selection-start="44734" selection-end="44734" vertical-scroll-proportion="0.0" vertical-offset="23148" max-vertical-offset="35244" />
@@ -1156,19 +1130,40 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/modules/overlay/overlay.module">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="222" column="30" selection-start="7480" selection-end="7480" vertical-scroll-proportion="-2.279661" vertical-offset="6130" max-vertical-offset="19088">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modules/overlay/overlay-child.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="90" column="28" selection-start="2977" selection-end="2977" vertical-scroll-proportion="0.0" vertical-offset="1296" max-vertical-offset="4509">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/sites/all/themes/brilliant_pr/script.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="98" column="44" selection-start="3440" selection-end="3440" vertical-scroll-proportion="0.0" vertical-offset="1296" max-vertical-offset="3321">
+        <state line="109" column="15" selection-start="3568" selection-end="3673" vertical-scroll-proportion="0.0" vertical-offset="1620" max-vertical-offset="3321">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sites/all/modules/brilliant_pr/overlay.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="11" selection-start="150" selection-end="150" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1089">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/sites/all/modules/brilliant_pr/brilliant_pr.module">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="3239" column="22" selection-start="104186" selection-end="104186" vertical-scroll-proportion="0.7962963" vertical-offset="57528" max-vertical-offset="64926">
+        <state line="3563" column="0" selection-start="115287" selection-end="115287" vertical-scroll-proportion="0.44444445" vertical-offset="63702" max-vertical-offset="65088">
           <folding>
-            <marker date="1402997233083" expanded="false" signature="103454:103467" placeholder="..." />
-            <marker date="1402997233083" expanded="false" signature="104445:104458" placeholder="..." />
+            <marker date="1402999257911" expanded="true" signature="103454:103467" placeholder="..." />
+            <marker date="1402999257911" expanded="true" signature="104445:104458" placeholder="..." />
           </folding>
         </state>
       </provider>

@@ -3548,7 +3548,16 @@ function brilliant_pr_preprocess_user_picture(&$variables) {
  * Implements hook_admin_paths_alter().
  */
 function brilliant_pr_admin_paths_alter(&$paths) {
-//  $paths['entity/brilliant_pr_project/basic/*'] = TRUE;
+  $paths['entity/brilliant_pr_project/basic/*'] = TRUE;
+}
+
+/**
+ * Implements overlay hook
+ */
+
+function brilliant_pr_overlay_child_initialize() {
+  // Add our custom JavaScript.
+  drupal_add_js(drupal_get_path('module', 'brilliant_pr') . '/overlay.js');
 }
 
 
