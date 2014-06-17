@@ -37,7 +37,7 @@ global $base_url;
         </a>
       <?php endif; ?>
       <?php if ($page['site_name']): ?>
-        <a class="name navbar-brand" href="<?php print $page['front_page']; ?>" title="<?php print t('Home'); ?>"><?php print $page['site_name']; ?></a>
+        <a class="name navbar-brand" href="<?php print $page['front_page']; ?>" title="<?php print t('Home'); ?>"><i class="fa fa-dashboard"></i>&nbsp;<?php print $page['site_name']; ?></a>
       <?php endif; ?>
       <?php if ($page['primary_nav'] || $page['secondary_nav'] || $content): ?>
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -78,19 +78,19 @@ global $base_url;
           </div>
         <?php endif; ?>
         <?php if (arg(1) == 'brilliant_pr_project' &&  $user->uid != in_array('implementor', $user->roles) && arg(3) != 'add' && arg(4) != 'tasks'): ?>
-          <span id="create-project">  <a href="<?php print $base_url;?>/entity/brilliant_pr_project/basic/add"><button type="button" class="btn btn-success" id="create-project-btn"><span class="round_label"><span class="glyphicon glyphicon-plus">&nbsp;</span></span><?php print t('Create project');?></button></a></span>
+          <span id="create-project">  <a href="<?php print $base_url;?>/entity/brilliant_pr_project/basic/add"><button type="button" class="btn-create" id="create-project-btn"><span class="round_label"><span class="glyphicon glyphicon-plus">&nbsp;</span></span><?php print t('Create project');?></button></a></span>
         <?php endif; ?>
         <?php if (arg(1) == 'brilliant_pr_project' &&  $user->uid != in_array('implementor', $user->roles) && arg(3) == 'add'): ?>
-          <span id="create-project">  <a href="<?php print $base_url;?>/entity/brilliant_pr_project/basic/add"><button type="button" class="btn btn-success" disabled='disabled' id="create-project-btn"><span class="round_label"><span class="glyphicon glyphicon-plus">&nbsp;</span></span><?php print t('Create project');?></button></a></span>
+          <span id="create-project">  <a href="<?php print $base_url;?>/entity/brilliant_pr_project/basic/add"><button type="button" class="btn-create" disabled='disabled' id="create-project-btn"><span class="round_label"><span class="glyphicon glyphicon-plus">&nbsp;</span></span><?php print t('Create project');?></button></a></span>
         <?php endif; ?>
 
 
         
         <?php if (arg(1) == 'brilliant_pr_task' && arg(3) != 'add'|| arg(4) == 'tasks' ): ?>
-          <span id="create-project">  <a href="<?php print $base_url;?>/entity/brilliant_pr_task/basic/add"><button type="button" class="btn btn-success" id="create-project-btn"><span class="round_label"><span class="glyphicon glyphicon-plus">&nbsp;</span></span><?php print t('Create task');?></button></a></span>
+          <span id="create-project">  <a href="<?php print $base_url;?>/entity/brilliant_pr_task/basic/add"><button type="button" class="btn-create" id="create-project-btn"><span class="round_label"><span class="glyphicon glyphicon-plus">&nbsp;</span></span><?php print t('Create task');?></button></a></span>
         <?php endif; ?>
         <?php if (arg(1) == 'brilliant_pr_task'  && arg(3) == 'add'): ?>
-          <span id="create-project">  <a href="<?php print $base_url;?>/entity/brilliant_pr_task/basic/add"><button type="button" class="btn btn-success" disabled='disabled' id="create-project-btn"><span class="round_label"><span class="glyphicon glyphicon-plus">&nbsp;</span></span><?php print t('Create task');?></button></a></span>
+          <span id="create-project">  <a href="<?php print $base_url;?>/entity/brilliant_pr_task/basic/add"><button type="button" class="btn-create" disabled='disabled' id="create-project-btn"><span class="round_label"><span class="glyphicon glyphicon-plus">&nbsp;</span></span><?php print t('Create task');?></button></a></span>
         <?php endif; ?>
         <?php print $content; ?>
       </nav>

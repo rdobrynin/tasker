@@ -101,17 +101,6 @@
                 }
         }
     };
-
-    Drupal.behaviors.select = {
-        attach : function(context, settings) {
-            $('.selectpicker').selectpicker({
-                style: 'btn',
-                size: 10
-            });
-        }
-    };
-
-
 //    Drupal.behaviors.scroll2 = {
 //        attach : function(context, settings) {
 //            var el=$('#menu_float');

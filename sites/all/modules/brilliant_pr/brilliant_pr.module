@@ -3203,13 +3203,11 @@ function brilliant_pr_form_alter(&$form, &$form_state, $form_id) {
   }
   if ($form_id == 'brilliant_pr_project_form') {
     $form['submit']["#attributes"]['class'][] = 'btn-success';
-    $form['curator']["#attributes"]['class'][] = 'selectpicker';
     $form['title']['#title_display'] = 'invisible';
     $form['title']['#title'] = t('Project name');
     $form['description']['#title_display'] = 'invisible';
     $form['description']['#title'] = t('Description');
     $form['customer_name']['#title'] = t('Contact person');
-    $form['customer_name']["#attributes"]['class'][] = 'selectpicker';
     $form['customer_name']['#title_display'] = 'invisible';
     $form['company']['#title_display'] = 'invisible';
     $form['company']['#title'] = t('Client');
@@ -3229,15 +3227,12 @@ function brilliant_pr_form_alter(&$form, &$form_state, $form_id) {
     $form['submit']["#attributes"]['class'][] = 'btn-success';
     $form['title']['#title_display'] = 'invisible';
     $form['title']['#title'] = t('Task name');
-    $form['ref']["#attributes"]['class'][] = 'selectpicker';
     $form['ref']['#title_display'] = 'invisible';
     $form['ref']['#title'] = t('Project ref');
     $form['description']['#title_display'] = 'invisible';
     $form['description']['#title'] = t('Description');
-    $form['curator']["#attributes"]['class'][] = 'selectpicker';
     $form['curator']['#title_display'] = 'invisible';
     $form['curator']['#title'] = t('Curator');
-    $form['implementor']["#attributes"]['class'][] = 'selectpicker';
     $form['implementor']['#title_display'] = 'invisible';
     $form['implementor']['#title'] = t('Implementor');
     $form['editor']['#title_display'] = 'invisible';
@@ -3548,16 +3543,13 @@ function brilliant_pr_preprocess_user_picture(&$variables) {
  * Implements hook_admin_paths_alter().
  */
 function brilliant_pr_admin_paths_alter(&$paths) {
-  $paths['entity/brilliant_pr_project/basic/*'] = TRUE;
-}
-
-/**
- * Implements overlay hook
- */
-
-function brilliant_pr_overlay_child_initialize() {
-  // Add our custom JavaScript.
-  drupal_add_js(drupal_get_path('module', 'brilliant_pr') . '/overlay.js');
+//  $paths['entity/brilliant_pr_project/basic/*'] = TRUE;
 }
 
 
+function brilliant_pr_preprocess_html(&$vars) {
+$filepath = path_to_theme() . '/fonts/font-awesome.min.css';
+drupal_add_css($filepath, array(
+  'group' => CSS_THEME,
+));
+}

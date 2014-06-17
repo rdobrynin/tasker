@@ -56,16 +56,16 @@ function brilliant_pr_menu_link(array $variables) {
 
   if($element["#theme"] == 'menu_link__menu_menu_float') {
     if($element['#title'] == 'Projects') {
-      $element['#title'] = '<span style="font-size:15px;" data-toggle="tooltip" data-original-title="Projects">'._bootstrap_icon('th-large'). '&nbsp;&nbsp;' . $element['#title'].'</span>';
+      $element['#title'] = '<span style="font-size:15px;" data-toggle="tooltip" data-original-title="Projects">'."<i class='fa fa-cube'></i>". '&nbsp;&nbsp;' . $element['#title'].'</span>';
     }
     if($element['#title'] == 'Tasks') {
-      $element['#title'] ='<span style="font-size:15px;" data-toggle="tooltip" data-original-title="Tasks">'._bootstrap_icon('th'). '&nbsp;&nbsp;' . $element['#title'].'</span>';
+      $element['#title'] ='<span style="font-size:15px;" data-toggle="tooltip" data-original-title="Tasks">'."<i class='fa fa-cubes'></i>". '&nbsp;&nbsp;' . $element['#title'].'</span>';
     }
     if($element['#title'] == 'Team') {
-      $element['#title'] ='<span style="font-size:15px;" data-toggle="tooltip" data-original-title="Tasks">'._bootstrap_icon('user'). '&nbsp;&nbsp;' . $element['#title'].'</span>';
+      $element['#title'] ='<span style="font-size:15px;" data-toggle="tooltip" data-original-title="Team">'."<i class='fa fa-users'></i>". '&nbsp;&nbsp;' . $element['#title'].'</span>';
     }
     if($element['#title'] == 'Calendar') {
-      $element['#title'] ='<span style="font-size:15px;" data-toggle="tooltip" data-original-title="Calendar">'._bootstrap_icon('calendar'). '&nbsp;&nbsp;' . $element['#title'].'</span>';
+      $element['#title'] ='<span style="font-size:15px;" data-toggle="tooltip" data-original-title="Calendar">'."<i class='fa fa-calendar'></i>".  '&nbsp;&nbsp;' . $element['#title'].'</span>';
     }
     if($element['#title'] == 'Chart') {
       $element['#title'] ='<span style="font-size:15px;" data-toggle="tooltip" data-original-title="Chart">'._bootstrap_icon('stats'). '&nbsp;&nbsp;' . $element['#title'].'</span>';
@@ -74,7 +74,7 @@ function brilliant_pr_menu_link(array $variables) {
       $element['#title'] ='<span style="font-size:15px;" data-toggle="tooltip" data-original-title="FAQ">'._bootstrap_icon('question-sign'). '&nbsp;&nbsp;' . $element['#title'].'</span>';
     }
     if($element['#title'] == 'Comments') {
-      $element['#title'] ='<span style="font-size:15px;" data-toggle="tooltip" data-original-title="Comments">'._bootstrap_icon('comment'). '&nbsp;&nbsp;' . $element['#title'].'</span>';
+      $element['#title'] ='<span style="font-size:15px;" data-toggle="tooltip" data-original-title="Comments">'."<i class='fa fa-comment'></i>".  '&nbsp;&nbsp;' . $element['#title'].'</span>';
     }
 
 //  dsm($element);
