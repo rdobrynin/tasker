@@ -4,4 +4,5 @@
         style: 'btn',
         size: 10
     });
+
 })(jQuery);
