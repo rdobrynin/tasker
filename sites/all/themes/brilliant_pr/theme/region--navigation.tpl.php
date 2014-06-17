@@ -65,7 +65,7 @@ global $base_url;
         </form>
 
 
-        <?php if ($user->uid != in_array('customer', $user->roles) && $user->uid != in_array('implementor', $user->roles)): ?>
+        <?php if ($user->uid == in_array('curator', $user->roles) || $user->uid == in_array('administrator', $user->roles) ): ?>
           <div class="btn-group select-nav-top">
             <button data-toggle="dropdown" class="btn dropdown-toggle" id="select-nav-top"><span class="glyphicon glyphicon-cog"></span></button>
             <ul class="dropdown-menu">
