@@ -3336,6 +3336,7 @@ function brilliant_pr_date_popup($vars) {
  */
 function brilliant_pr_block_info() {
   $blocks['project_statistics'] = array('info' => t('Project statistics'));
+  $blocks['task_statistics'] = array('info' => t('Task statistics'));
   $blocks['brilliant_user_avatar_block'] = array('info' => t('User avatar'));
   return $blocks;
 }
@@ -3349,7 +3350,7 @@ function brilliant_pr_block_view($delta = '') {
   global $user;
   $block = array();
   if ($delta == 'project_statistics') {
-    $block['subject'] = t('Projects statistics');
+    $block['subject'] = t('Statistics');
     $query = db_select('brilliant_pr_project', 'p')
       ->condition('status', 2) //Only processing projects
       ->fields('p', array(
@@ -3374,7 +3375,8 @@ function brilliant_pr_block_view($delta = '') {
         }
       }
     }
-    $block_content = '<span class="process_label"></span>' . t('In process') . ' (' . $counter_pr . ')';
+    $block_content = '<div class="stats_lbl">'.'<i class="fa fa-cube"></i>'.' '.t('Projects').'</div>';
+    $block_content .= '<span class="process_label"></span>' . t('In process') . ' (' . $counter_pr . ')';
     $block_content .= '</br>';
     $query = db_select('brilliant_pr_project', 'p')
       ->condition('status', 1) //Only processing projects
@@ -3400,7 +3402,7 @@ function brilliant_pr_block_view($delta = '') {
         }
       }
     }
-    $block_content .= '<span class="approve_label"></span>' . t('For approve') . ' (' . $counter_ap . ')';
+    $block_content .= '<span class="approve_label"></span>' . t('Approve') . ' (' . $counter_ap . ')';
     $block_content .= '</br>';
     $query = db_select('brilliant_pr_project', 'p')
       ->condition('status', 3) //Only completed projects
@@ -3460,6 +3462,102 @@ function brilliant_pr_block_view($delta = '') {
       }
     }
     $block_content .= '<span class="overdue_label"></span>' . t('Overdue') . ' (' . $counter_over . ')';
+    $block_content .= '<div class="stats_lbl">'.'<i class="fa fa-cubes"></i>'.' '.t('Tasks').'</div>';
+    $query = db_select('brilliant_pr_task', 't')
+      ->condition('status', 3) //Only processing projects
+      ->fields('t', array(
+        'tid',
+        'ref',
+        'title',
+        'status',
+        'created',
+        'changed',
+        'opt_time',
+        'dead_time',
+        'uid',
+        'implementor',
+        'curator',
+      ));
+    $results = $query
+      ->execute();
+
+    $counter_pr = 0; // make counter in cycle (to know how many tasks per project)
+    foreach($results as $entity) {
+      if ($user->uid != 0) {
+        if($user->name == $entity->curator || $user->name == $entity->implementor || in_array('administrator', $user->roles)) {
+
+            $counter_pr++;
+
+
+        }
+      }
+    }
+    $block_content .= '<span class="process_label"></span>' . t('Paused') . ' (' . $counter_pr . ')';
+    $block_content .= '</br>';
+    $query = db_select('brilliant_pr_task', 't')
+      ->condition('status', 0) //Only processing projects
+      ->fields('t', array(
+        'tid',
+        'ref',
+        'title',
+        'status',
+        'created',
+        'changed',
+        'opt_time',
+        'dead_time',
+        'uid',
+        'implementor',
+        'curator',
+      ));
+    $results = $query
+      ->execute();
+
+    $counter_pr = 0; // make counter in cycle (to know how many tasks per project)
+    foreach($results as $entity) {
+      if ($user->uid != 0) {
+        if($user->name == $entity->curator || $user->name == $entity->implementor || in_array('administrator', $user->roles)) {
+
+          $counter_pr++;
+
+
+        }
+      }
+    }
+
+    $block_content .= '<span class="approve_label"></span>' . t('Approve') . ' (' . $counter_pr . ')';
+    $block_content .= '</br>';
+    $query = db_select('brilliant_pr_task', 't')
+      ->condition('status', 1) //Only processing projects
+      ->fields('t', array(
+        'tid',
+        'ref',
+        'title',
+        'status',
+        'created',
+        'changed',
+        'opt_time',
+        'dead_time',
+        'uid',
+        'implementor',
+        'curator',
+      ));
+    $results = $query
+      ->execute();
+
+    $counter_pr = 0; // make counter in cycle (to know how many tasks per project)
+    foreach($results as $entity) {
+      if ($user->uid != 0) {
+        if($user->name == $entity->curator || $user->name == $entity->implementor || in_array('administrator', $user->roles)) {
+
+          $counter_pr++;
+
+
+        }
+      }
+    }
+    $block_content .= '<span class="complete_label"></span>' . t('Complete') . ' (' . $counter_pr . ')';
+    $block_content .= '</br>';
+
     $block['content'] = $block_content;
   }
   if ($delta == 'brilliant_user_avatar_block') {
