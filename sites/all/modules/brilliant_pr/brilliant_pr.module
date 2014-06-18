@@ -181,6 +181,18 @@ function brilliant_pr_menu() {
     'weight' => -100,
   );
 
+//  CURATORS CAN VIEW CLIENTS
+  $items['entity/brilliant_pr_project/clients'] = array(
+    'title' => t('Clients'),
+    'page callback' => 'brilliant_pr_project_clients_info_page',
+//  access right for viewing projects
+    'access arguments' => array('manage clients'),
+    'file' => 'brilliant_pr_project_clients.inc',
+    'weight' => -100,
+    'type' => MENU_LOCAL_TASK
+  );
+
+
   $items['admin/structure/brilliant_pr_project/manage'] = array(
     'title' => t('Administer projects'),
     'page callback' => 'brilliant_pr_project_admin_page',
@@ -553,6 +565,10 @@ function brilliant_pr_permission() {
       'title' => t('View Projects'),
       'restrict access' => TRUE,
     ),
+    'manage clients' => array(
+      'title' => t('Manage clients'),
+      'restrict access' => TRUE,
+    ),
     'view own brilliant_pr_projects' => array(
       'title' => t('View own Projects'),
       'restrict access' => TRUE,
@@ -749,6 +765,10 @@ function brilliant_pr_project_access($op, $entity_type, $entity = NULL, $account
       return TRUE;
     }
     elseif (user_access('view user deleted brilliant_pr_projects', $account) && $entity->uid == $account->uid) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    }
+    elseif (user_access('manage clients', $account) && $entity->uid == $account->uid) {
       $rights[$account->uid][$cid][$op] = TRUE;
       return TRUE;
     }
@@ -3273,6 +3293,7 @@ function brilliant_pr_form_alter(&$form, &$form_state, $form_id) {
 
 function brilliant_pr_menu_local_tasks_alter(&$data, $router_item, $root_path) {
   // Add an action linking to node/add to all pages.
+
   $arg = arg(3);
   if(is_numeric(arg(3))) {
     $tasks = brilliant_pr_task_load_multiple();
@@ -3290,9 +3311,9 @@ function brilliant_pr_menu_local_tasks_alter(&$data, $router_item, $root_path) {
       $title = t('No tasks');
       $data['tabs'][0]['output'][2]['#link']['title'] = t('Current tasks'). ' '.'<span id="task_counter_empty" class="badge">'.$title.'</span>';
     }
-
+    $data['tabs'][0]['output'][2]['#link']['localized_options']['html'] = TRUE;
   }
-  $data['tabs'][0]['output'][2]['#link']['localized_options']['html'] = TRUE;
+//  $data['tabs'][0]['output'][2]['#link']['localized_options']['html'] = TRUE;
   // Add a tab linking to node/add to all pages.
 //  $data['tabs'][0]['output'][] = array(
 //    '#theme' => 'menu_local_task',
@@ -3659,4 +3680,9 @@ drupal_add_css($filepath, array(
 
 function brilliant_pr_overlay_child_initialize() {
   drupal_add_js(drupal_get_path('module', 'brilliant_pr') . '/overlay.js');
+}
+
+function brilliant_pr_menu_alter(&$item) {
+
+  $item['entity/brilliant_pr_project/clients']['type'] = MENU_CALLBACK;
 }
