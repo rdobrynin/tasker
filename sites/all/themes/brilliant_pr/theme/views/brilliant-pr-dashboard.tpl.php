@@ -110,41 +110,65 @@ $results_taxonomy = $company_tax
     $results = $query
       ->execute();
     $counter_projects = 0;
+    $counter_projects_process = 0;
+    $counter_projects_complete = 0;
+    $counter_projects_approve = 0;
+    $counter_projects_wait = 0;
     ?>
     <?php foreach ($results as $entity): ?>
+
+
       <?php if ($user->name == $entity->curator): ?>
         <?php $counter_projects++; ?>
       <?php endif; ?>
+
+      <?php if ($user->name == $entity->curator && $entity->status == 2): ?>
+        <?php $counter_projects_process++; ?>
+      <?php endif; ?>
+
+      <?php if ($user->name == $entity->curator && $entity->status == 3): ?>
+        <?php $counter_projects_complete++; ?>
+      <?php endif; ?>
+
+      <?php if ($user->name == $entity->curator && $entity->status == 1): ?>
+        <?php $counter_projects_approve++; ?>
+      <?php endif; ?>
+
+      <?php if ($user->name == $entity->curator && $entity->status == 0): ?>
+        <?php $counter_projects_wait++; ?>
+      <?php endif; ?>
+
     <?php endforeach; ?>
     <div class="client-wrapper col-md-3">
       <div class="client-box">
         <h4><?php print render($tax->name); ?></h4>
-<!--TOTAL PROJECTS-->
+
+        <!--WAITING PROJECTS-->
         <div class="cl-label"><span
-            class="label label-primary"><?php print t('Total projects'); ?></span>&nbsp;
+            class="label label-approve"><?php print t('Waiting projects'); ?></span>&nbsp;
           <span
-            class="cl-title"><?php print render($counter_projects); ?></span>
+            class="cl-title"><?php print render($counter_projects_wait); ?></span>
         </div>
 
         <!--CURRENT PROJECTS-->
         <div class="cl-label"><span
             class="label label-success"><?php print t('Current projects'); ?></span>&nbsp;
           <span
-            class="cl-title"><?php print render($counter_projects); ?></span>
+            class="cl-title"><?php print render($counter_projects_process); ?></span>
         </div>
 
         <!--COMPLETE PROJECTS-->
         <div class="cl-label"><span
             class="label label-info"><?php print t('Complete projects'); ?></span>&nbsp;
           <span
-            class="cl-title"><?php print render($counter_projects); ?></span>
+            class="cl-title"><?php print render($counter_projects_complete); ?></span>
         </div>
 
-        <!--OVERDUE PROJECTS-->
+        <!--APPROVE PROJECTS-->
         <div class="cl-label"><span
-            class="label label-danger"><?php print t('Overdue projects'); ?></span>&nbsp;
+            class="label label-danger"><?php print t('Approve projects'); ?></span>&nbsp;
           <span
-            class="cl-title"><?php print render($counter_projects); ?></span>
+            class="cl-title"><?php print render($counter_projects_approve); ?></span>
         </div>
       </div>
     </div>

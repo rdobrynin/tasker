@@ -182,9 +182,9 @@ function brilliant_pr_menu() {
   );
 
 //  CURATORS CAN VIEW CLIENTS
-  $items['entity/brilliant_pr_project/clients'] = array(
+  $items['entity/brilliant_pr_project/dashboard'] = array(
     'title' => t('Clients'),
-    'page callback' => 'brilliant_pr_project_clients_info_page',
+    'page callback' => 'brilliant_pr_project_dashboard_page',
 //  access right for viewing projects
     'access arguments' => array('manage clients'),
     'weight' => -100,
@@ -3090,10 +3090,10 @@ function brilliant_pr_user_view_alter(&$account, $view_mode, $langcode) {
  */
 
 
-function brilliant_pr_project_clients_info_page() {
+function brilliant_pr_project_dashboard_page() {
 
 
-  return theme('brilliant_pr_clients');
+  return theme('brilliant_pr_dashboard');
 }
 
 
@@ -3152,10 +3152,10 @@ function brilliant_pr_theme() {
     'variables' => array('element' => NULL),
     'template' => 'brilliant_pr_task',
   );
-  $items['brilliant_pr_clients'] = array(
+  $items['brilliant_pr_dashboard'] = array(
     'path' => drupal_get_path('theme', 'brilliant_pr') . '/theme/views',
     'variables' => array('element' => NULL),
-    'template' => 'brilliant-pr-clients',
+    'template' => 'brilliant-pr-dashboard',
   );
 
   return $items;
@@ -3702,5 +3702,5 @@ function brilliant_pr_overlay_child_initialize() {
 
 function brilliant_pr_menu_alter(&$item) {
 
-  $item['entity/brilliant_pr_project/clients']['type'] = MENU_CALLBACK;
+  $item['entity/brilliant_pr_project/dashboard']['type'] = MENU_CALLBACK;
 }
