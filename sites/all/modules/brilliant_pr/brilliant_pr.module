@@ -187,7 +187,6 @@ function brilliant_pr_menu() {
     'page callback' => 'brilliant_pr_project_clients_info_page',
 //  access right for viewing projects
     'access arguments' => array('manage clients'),
-    'file' => 'brilliant_pr_project_clients.inc',
     'weight' => -100,
     'type' => MENU_LOCAL_TASK
   );
@@ -3085,6 +3084,13 @@ function brilliant_pr_user_view_alter(&$account, $view_mode, $langcode) {
   unset($account['summary']);
 }
 
+
+function brilliant_pr_project_clients_info_page() {
+  return theme('brilliant_pr_clients');
+}
+
+
+
 /**
  * list of templates
  * @return array
@@ -3138,6 +3144,11 @@ function brilliant_pr_theme() {
     'path' => drupal_get_path('theme', 'brilliant_pr') . '/theme/views',
     'variables' => array('element' => NULL),
     'template' => 'brilliant_pr_task',
+  );
+  $items['brilliant_pr_clients'] = array(
+    'path' => drupal_get_path('theme', 'brilliant_pr') . '/theme/views',
+    'variables' => array('element' => NULL),
+    'template' => 'brilliant-pr-clients',
   );
 
   return $items;
