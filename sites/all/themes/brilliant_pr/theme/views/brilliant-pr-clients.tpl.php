@@ -119,20 +119,30 @@ $results_taxonomy = $company_tax
     <div class="client-wrapper col-md-3">
       <div class="client-box">
         <h4><?php print render($tax->name); ?></h4>
-<!--PROJECT TITLE-->
-        <div class="cl-label "><span
-            class="label label-primary"><?php print t('Project'); ?></span>&nbsp;
-          <span class="cl-title"><?php print render($entity->title); ?></span>
-        </div>
-<!--CONTACT CLIENT-->
-        <div class="cl-label"><span
-            class="label label-primary"><?php print t('Contact person'); ?></span>&nbsp;
-          <span
-            class="cl-title"><?php print render($entity->customer_name); ?></span>
-        </div>
 <!--TOTAL PROJECTS-->
         <div class="cl-label"><span
             class="label label-primary"><?php print t('Total projects'); ?></span>&nbsp;
+          <span
+            class="cl-title"><?php print render($counter_projects); ?></span>
+        </div>
+
+        <!--CURRENT PROJECTS-->
+        <div class="cl-label"><span
+            class="label label-success"><?php print t('Current projects'); ?></span>&nbsp;
+          <span
+            class="cl-title"><?php print render($counter_projects); ?></span>
+        </div>
+
+        <!--COMPLETE PROJECTS-->
+        <div class="cl-label"><span
+            class="label label-info"><?php print t('Complete projects'); ?></span>&nbsp;
+          <span
+            class="cl-title"><?php print render($counter_projects); ?></span>
+        </div>
+
+        <!--OVERDUE PROJECTS-->
+        <div class="cl-label"><span
+            class="label label-danger"><?php print t('Overdue projects'); ?></span>&nbsp;
           <span
             class="cl-title"><?php print render($counter_projects); ?></span>
         </div>
