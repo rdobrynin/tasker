@@ -76,5 +76,14 @@
 ?>
 <?php
 global $user;
+$entities = brilliant_pr_project_load_multiple();
 ?>
-<?php var_dump('test');?>
+  <?php foreach($entities as $entity): ?>
+    <?php if(!empty($entity)): ?>
+      <div class="client-wrapper col-md-3">
+   <div class="client-box">
+     <?php print render($entity->title); ?>
+   </div>
+      </div>
+    <?php endif; ?>
+  <?php endforeach; ?>
