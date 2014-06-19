@@ -78,12 +78,68 @@
 global $user;
 $entities = brilliant_pr_project_load_multiple();
 ?>
-  <?php foreach($entities as $entity): ?>
-    <?php if(!empty($entity)): ?>
-      <div class="client-wrapper col-md-3">
-   <div class="client-box">
-     <?php print render($entity->title); ?>
-   </div>
+
+<!-- get company taxonomy-->
+
+<?php $vocab = taxonomy_vocabulary_machine_name_load('brilliant_pr_company_vocab'); ?>
+<?php $company_tax = db_select('taxonomy_term_data', 't')
+  ->condition('vid', $vocab->vid, '=')
+  ->fields('t', array(
+    'name',
+  ));
+$results_taxonomy = $company_tax
+  ->execute();
+?>
+
+<?php foreach ($results_taxonomy as $tax): ?>
+  <?php if (!empty($tax)): ?>
+    <?php
+    $query = db_select('brilliant_pr_project', 'p')
+      ->condition('company', $tax->name, '=')
+      ->fields('p', array(
+        'pid',
+        'title',
+        'status',
+        'created',
+        'opt_time',
+        'dead_time',
+        'uid',
+        'customer_name',
+        'curator',
+      ));
+    $results = $query
+      ->execute();
+    $counter_projects = 0;
+    ?>
+    <?php foreach ($results as $entity): ?>
+      <?php if ($user->name == $entity->curator): ?>
+        <?php $counter_projects++; ?>
+      <?php endif; ?>
+    <?php endforeach; ?>
+    <div class="client-wrapper col-md-3">
+      <div class="client-box">
+        <h4><?php print render($tax->name); ?></h4>
+<!--PROJECT TITLE-->
+        <div class="cl-label "><span
+            class="label label-primary"><?php print t('Project'); ?></span>&nbsp;
+          <span class="cl-title"><?php print render($entity->title); ?></span>
+        </div>
+<!--CONTACT CLIENT-->
+        <div class="cl-label"><span
+            class="label label-primary"><?php print t('Contact person'); ?></span>&nbsp;
+          <span
+            class="cl-title"><?php print render($entity->customer_name); ?></span>
+        </div>
+<!--TOTAL PROJECTS-->
+        <div class="cl-label"><span
+            class="label label-primary"><?php print t('Total projects'); ?></span>&nbsp;
+          <span
+            class="cl-title"><?php print render($counter_projects); ?></span>
+        </div>
       </div>
-    <?php endif; ?>
-  <?php endforeach; ?>
+    </div>
+  <?php endif; ?>
+<?php endforeach; ?>
+
+
+
