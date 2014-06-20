@@ -3125,7 +3125,7 @@ function brilliant_pr_project_dashboard_page() {
 
   $data = array(
     'page' => array(
-      'name' => $user->name,
+      'username' => $user->name,
       'project_stats' => get_project_statistics(),
       'task_stats' => get_task_statistics(),
       'log_stats' => get_logs(),
