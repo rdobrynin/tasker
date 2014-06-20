@@ -181,6 +181,17 @@ function brilliant_pr_menu() {
     'weight' => -100,
   );
 
+//  CURATORS CAN VIEW CLIENTS
+  $items['entity/brilliant_pr_project/dashboard'] = array(
+    'title' => t('Dashboard'),
+    'page callback' => 'brilliant_pr_project_dashboard_page',
+//  access right for viewing projects
+    'access arguments' => array('view dashboard'),
+    'weight' => -100,
+    'type' => MENU_LOCAL_TASK
+  );
+
+
   $items['admin/structure/brilliant_pr_project/manage'] = array(
     'title' => t('Administer projects'),
     'page callback' => 'brilliant_pr_project_admin_page',
@@ -553,6 +564,10 @@ function brilliant_pr_permission() {
       'title' => t('View Projects'),
       'restrict access' => TRUE,
     ),
+    'view dashboard' => array(
+      'title' => t('View dashboard'),
+      'restrict access' => TRUE,
+    ),
     'view own brilliant_pr_projects' => array(
       'title' => t('View own Projects'),
       'restrict access' => TRUE,
@@ -749,6 +764,10 @@ function brilliant_pr_project_access($op, $entity_type, $entity = NULL, $account
       return TRUE;
     }
     elseif (user_access('view user deleted brilliant_pr_projects', $account) && $entity->uid == $account->uid) {
+      $rights[$account->uid][$cid][$op] = TRUE;
+      return TRUE;
+    }
+    elseif (user_access('view dashboard', $account) && $entity->uid == $account->uid) {
       $rights[$account->uid][$cid][$op] = TRUE;
       return TRUE;
     }
@@ -3066,6 +3085,75 @@ function brilliant_pr_user_view_alter(&$account, $view_mode, $langcode) {
 }
 
 /**
+ * GET PROJECTS STATS
+ * @return string
+ */
+
+function get_project_statistics() {
+
+  $result = '1';
+  return $result;
+}
+
+/**
+ * GET TASKS STATS
+ * @return string
+ */
+
+
+function get_task_statistics() {
+
+  $result = '2';
+  return $result;
+}
+
+/**
+ * GET LOGS
+ * @return string
+ */
+
+function get_logs() {
+
+  $result = '3';
+  return $result;
+}
+
+
+/**
+ * DASHBOARD RESULT DATA
+ * @return string
+ */
+
+
+function brilliant_pr_project_dashboard_page() {
+  global $user;
+
+  $data = array(
+    'page' => array(
+      'name'=>$user->name,
+      'project_stats' => get_project_statistics(),
+      'task_stats' => get_task_statistics(),
+      'log_stats' => get_logs(),
+    ),
+  );
+
+  $theme = 'brilliant_pr_dashboard';
+  if(in_array('curator', $user->roles)) {
+  $theme='brilliant_pr_dashboard_curator';
+  }
+  else if (in_array('customer', $user->roles)) {
+    $theme='brilliant_pr_dashboard_customer';
+  }
+  else if (in_array('implementor', $user->roles)) {
+    $theme='brilliant_pr_dashboard_implementor';
+  }
+
+  return theme($theme, $data);
+}
+
+
+
+/**
  * list of templates
  * @return array
  * list of tpl files implemented
@@ -3118,6 +3206,26 @@ function brilliant_pr_theme() {
     'path' => drupal_get_path('theme', 'brilliant_pr') . '/theme/views',
     'variables' => array('element' => NULL),
     'template' => 'brilliant_pr_task',
+  );
+  $items['brilliant_pr_dashboard'] = array(
+    'path' => drupal_get_path('theme', 'brilliant_pr') . '/theme/views',
+    'variables' => array('element' => NULL),
+    'template' => 'brilliant-pr-dashboard',
+  );
+  $items['brilliant_pr_dashboard_curator'] = array(
+    'path' => drupal_get_path('theme', 'brilliant_pr') . '/theme/views',
+    'variables' => array('element' => NULL),
+    'template' => 'brilliant-pr-dashboard-curator',
+  );
+  $items['brilliant_pr_dashboard_customer'] = array(
+    'path' => drupal_get_path('theme', 'brilliant_pr') . '/theme/views',
+    'variables' => array('element' => NULL),
+    'template' => 'brilliant-pr-dashboard-customer',
+  );
+  $items['brilliant_pr_dashboard_implementor'] = array(
+    'path' => drupal_get_path('theme', 'brilliant_pr') . '/theme/views',
+    'variables' => array('element' => NULL),
+    'template' => 'brilliant-pr-dashboard-implementor',
   );
 
   return $items;
@@ -3273,6 +3381,7 @@ function brilliant_pr_form_alter(&$form, &$form_state, $form_id) {
 
 function brilliant_pr_menu_local_tasks_alter(&$data, $router_item, $root_path) {
   // Add an action linking to node/add to all pages.
+
   $arg = arg(3);
   if(is_numeric(arg(3))) {
     $tasks = brilliant_pr_task_load_multiple();
@@ -3290,9 +3399,9 @@ function brilliant_pr_menu_local_tasks_alter(&$data, $router_item, $root_path) {
       $title = t('No tasks');
       $data['tabs'][0]['output'][2]['#link']['title'] = t('Current tasks'). ' '.'<span id="task_counter_empty" class="badge">'.$title.'</span>';
     }
-
+    $data['tabs'][0]['output'][2]['#link']['localized_options']['html'] = TRUE;
   }
-  $data['tabs'][0]['output'][2]['#link']['localized_options']['html'] = TRUE;
+//  $data['tabs'][0]['output'][2]['#link']['localized_options']['html'] = TRUE;
   // Add a tab linking to node/add to all pages.
 //  $data['tabs'][0]['output'][] = array(
 //    '#theme' => 'menu_local_task',
@@ -3659,4 +3768,9 @@ drupal_add_css($filepath, array(
 
 function brilliant_pr_overlay_child_initialize() {
   drupal_add_js(drupal_get_path('module', 'brilliant_pr') . '/overlay.js');
+}
+
+function brilliant_pr_menu_alter(&$item) {
+
+  $item['entity/brilliant_pr_project/dashboard']['type'] = MENU_CALLBACK;
 }

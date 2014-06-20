@@ -55,6 +55,9 @@ function brilliant_pr_menu_link(array $variables) {
   }
 
   if($element["#theme"] == 'menu_link__menu_menu_float') {
+    if($element['#title'] == 'Dashboard') {
+      $element['#title'] = '<span style="font-size:15px;" data-toggle="tooltip" data-original-title="Projects">'."<i class='fa fa-dashboard'></i>". '&nbsp;&nbsp;' . $element['#title'].'</span>';
+    }
     if($element['#title'] == 'Projects') {
       $element['#title'] = '<span style="font-size:15px;" data-toggle="tooltip" data-original-title="Projects">'."<i class='fa fa-cube'></i>". '&nbsp;&nbsp;' . $element['#title'].'</span>';
     }
