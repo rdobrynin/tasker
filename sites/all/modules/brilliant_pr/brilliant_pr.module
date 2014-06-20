@@ -3085,12 +3085,23 @@ function brilliant_pr_user_view_alter(&$account, $view_mode, $langcode) {
 }
 
 /**
- * CLIENT PAGE
+ * DASHBOARD PAGE
  * @return string
  */
 
 
 function brilliant_pr_project_dashboard_page() {
+
+
+  $data = array(
+    'hello' => array(
+      'test'=>'testststst',
+      'test2'=>'2222',
+    ),
+    'mine' => 'test'
+  );
+
+
 global $user;
   $theme = 'brilliant_pr_dashboard';
   if(in_array('curator', $user->roles)) {
@@ -3103,7 +3114,7 @@ global $user;
     $theme='brilliant_pr_dashboard_implementor';
   }
 
-  return theme($theme);
+  return theme($theme, $data);
 }
 
 

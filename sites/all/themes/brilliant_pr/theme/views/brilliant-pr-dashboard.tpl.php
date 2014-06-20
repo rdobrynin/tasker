@@ -76,104 +76,13 @@
 ?>
 <?php
 global $user;
-$entities = brilliant_pr_project_load_multiple();
 ?>
 
 <!-- get company taxonomy-->
 
-<?php $vocab = taxonomy_vocabulary_machine_name_load('brilliant_pr_company_vocab'); ?>
-<?php $company_tax = db_select('taxonomy_term_data', 't')
-  ->condition('vid', $vocab->vid, '=')
-  ->fields('t', array(
-    'name',
-  ));
-$results_taxonomy = $company_tax
-  ->execute();
-?>
+
 <h1>Admin</h1>
-<?php foreach ($results_taxonomy as $tax): ?>
-  <?php if (!empty($tax)): ?>
-    <?php
-    $query = db_select('brilliant_pr_project', 'p')
-      ->condition('company', $tax->name, '=')
-      ->fields('p', array(
-        'pid',
-        'title',
-        'status',
-        'created',
-        'opt_time',
-        'dead_time',
-        'uid',
-        'customer_name',
-        'curator',
-      ));
-    $results = $query
-      ->execute();
-    $counter_projects = 0;
-    $counter_projects_process = 0;
-    $counter_projects_complete = 0;
-    $counter_projects_approve = 0;
-    $counter_projects_wait = 0;
-    ?>
-    <?php foreach ($results as $entity): ?>
 
 
-      <?php if ($user->name == $entity->curator): ?>
-        <?php $counter_projects++; ?>
-      <?php endif; ?>
-
-      <?php if ($user->name == $entity->curator && $entity->status == 2): ?>
-        <?php $counter_projects_process++; ?>
-      <?php endif; ?>
-
-      <?php if ($user->name == $entity->curator && $entity->status == 3): ?>
-        <?php $counter_projects_complete++; ?>
-      <?php endif; ?>
-
-      <?php if ($user->name == $entity->curator && $entity->status == 1): ?>
-        <?php $counter_projects_approve++; ?>
-      <?php endif; ?>
-
-      <?php if ($user->name == $entity->curator && $entity->status == 0): ?>
-        <?php $counter_projects_wait++; ?>
-      <?php endif; ?>
-
-    <?php endforeach; ?>
-    <div class="client-wrapper col-md-3">
-      <div class="client-box">
-        <h4><?php print render($tax->name); ?></h4>
-
-        <!--WAITING PROJECTS-->
-        <div class="cl-label"><span
-            class="label label-approve"><?php print t('Waiting projects'); ?></span>&nbsp;
-          <span
-            class="cl-title"><?php print render($counter_projects_wait); ?></span>
-        </div>
-
-        <!--CURRENT PROJECTS-->
-        <div class="cl-label"><span
-            class="label label-success"><?php print t('Current projects'); ?></span>&nbsp;
-          <span
-            class="cl-title"><?php print render($counter_projects_process); ?></span>
-        </div>
-
-        <!--COMPLETE PROJECTS-->
-        <div class="cl-label"><span
-            class="label label-info"><?php print t('Complete projects'); ?></span>&nbsp;
-          <span
-            class="cl-title"><?php print render($counter_projects_complete); ?></span>
-        </div>
-
-        <!--APPROVE PROJECTS-->
-        <div class="cl-label"><span
-            class="label label-danger"><?php print t('Approve projects'); ?></span>&nbsp;
-          <span
-            class="cl-title"><?php print render($counter_projects_approve); ?></span>
-        </div>
-      </div>
-    </div>
-  <?php endif; ?>
-<?php endforeach; ?>
-
-
+<?php var_dump($hello);?>
 
