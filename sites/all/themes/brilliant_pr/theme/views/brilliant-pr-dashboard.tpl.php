@@ -81,8 +81,9 @@ global $user;
 <!-- get company taxonomy-->
 
 
-<h1>Admin</h1>
+<h1><?php print($page['name']);?></h1>
 
 
-<?php var_dump($hello);?>
+<?php var_dump($page);?>
+
 
