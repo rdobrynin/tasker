@@ -238,7 +238,7 @@ function brilliant_pr_install() {
   $curator_permissions = array(
     'administer brilliant_pr_projects',
     'view brilliant_pr_projects',
-    'manage clients',
+    'view dashboard',
     'view own brilliant_pr_projects',
     'edit brilliant_pr_projects',
     'create brilliant_pr_projects',

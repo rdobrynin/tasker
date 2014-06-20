@@ -186,7 +186,7 @@ function brilliant_pr_menu() {
     'title' => t('Clients'),
     'page callback' => 'brilliant_pr_project_dashboard_page',
 //  access right for viewing projects
-    'access arguments' => array('manage clients'),
+    'access arguments' => array('view dashboard'),
     'weight' => -100,
     'type' => MENU_LOCAL_TASK
   );
@@ -564,8 +564,8 @@ function brilliant_pr_permission() {
       'title' => t('View Projects'),
       'restrict access' => TRUE,
     ),
-    'manage clients' => array(
-      'title' => t('Manage clients'),
+    'view dashboard' => array(
+      'title' => t('View dashboard'),
       'restrict access' => TRUE,
     ),
     'view own brilliant_pr_projects' => array(
@@ -767,7 +767,7 @@ function brilliant_pr_project_access($op, $entity_type, $entity = NULL, $account
       $rights[$account->uid][$cid][$op] = TRUE;
       return TRUE;
     }
-    elseif (user_access('manage clients', $account) && $entity->uid == $account->uid) {
+    elseif (user_access('view dashboard', $account) && $entity->uid == $account->uid) {
       $rights[$account->uid][$cid][$op] = TRUE;
       return TRUE;
     }
@@ -3091,9 +3091,19 @@ function brilliant_pr_user_view_alter(&$account, $view_mode, $langcode) {
 
 
 function brilliant_pr_project_dashboard_page() {
+global $user;
+  $theme = 'brilliant_pr_dashboard';
+  if(in_array('curator', $user->roles)) {
+  $theme='brilliant_pr_dashboard_curator';
+  }
+  else if (in_array('customer', $user->roles)) {
+    $theme='brilliant_pr_dashboard_customer';
+  }
+  else if (in_array('implementor', $user->roles)) {
+    $theme='brilliant_pr_dashboard_implementor';
+  }
 
-
-  return theme('brilliant_pr_dashboard');
+  return theme($theme);
 }
 
 
@@ -3156,6 +3166,21 @@ function brilliant_pr_theme() {
     'path' => drupal_get_path('theme', 'brilliant_pr') . '/theme/views',
     'variables' => array('element' => NULL),
     'template' => 'brilliant-pr-dashboard',
+  );
+  $items['brilliant_pr_dashboard_curator'] = array(
+    'path' => drupal_get_path('theme', 'brilliant_pr') . '/theme/views',
+    'variables' => array('element' => NULL),
+    'template' => 'brilliant-pr-dashboard-curator',
+  );
+  $items['brilliant_pr_dashboard_customer'] = array(
+    'path' => drupal_get_path('theme', 'brilliant_pr') . '/theme/views',
+    'variables' => array('element' => NULL),
+    'template' => 'brilliant-pr-dashboard-customer',
+  );
+  $items['brilliant_pr_dashboard_implementor'] = array(
+    'path' => drupal_get_path('theme', 'brilliant_pr') . '/theme/views',
+    'variables' => array('element' => NULL),
+    'template' => 'brilliant-pr-dashboard-implementor',
   );
 
   return $items;

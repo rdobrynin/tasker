@@ -90,7 +90,7 @@ $entities = brilliant_pr_project_load_multiple();
 $results_taxonomy = $company_tax
   ->execute();
 ?>
-<h1>Admin</h1>
+<h1>Customer</h1>
 <?php foreach ($results_taxonomy as $tax): ?>
   <?php if (!empty($tax)): ?>
     <?php
