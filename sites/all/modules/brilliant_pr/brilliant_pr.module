@@ -187,6 +187,7 @@ function brilliant_pr_menu() {
     'page callback' => 'brilliant_pr_project_dashboard_page',
 //  access right for viewing projects
     'access arguments' => array('view dashboard'),
+    'file' => 'brilliant_pr_dashboard.inc',
     'weight' => -100,
     'type' => MENU_LOCAL_TASK
   );
@@ -1438,16 +1439,7 @@ function brilliant_pr_project_form($form, &$form_state, $entity) {
       '#title' => t('Curator'),
       '#description' => t('Curator of project'),
       '#default_value' => isset($entity->curator) ? $entity->curator : '',
-      '#required' => TRUE,
-      '#weight' => -70,
-    );
-    $form['editor'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Editor'),
-      '#options' => $user->name,
-      '#description' => t('Editor of project'),
-      '#default_value' => $user->name,
-      '#required' => TRUE,
+      '#required' => FALSE,
       '#weight' => -70,
     );
     $form['opt_time'] = array(
@@ -1740,15 +1732,6 @@ function brilliant_pr_task_form($form, &$form_state, $entity) {
       '#required' => TRUE,
       '#default_value' => isset($entity->title) ? $entity->title : '',
       '#weight' => -100,
-    );
-    $form['editor'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Editor'),
-      '#options' => $user->name,
-      '#description' => t('Editor of task'),
-      '#default_value' => $user->name,
-      '#required' => TRUE,
-      '#weight' => -70,
     );
 // select projects from array without status 5 (remove) && 3 (complete)
 //    we check if we came from save and create task, we need get last pid of project, then we fetch it
@@ -2192,7 +2175,6 @@ function brilliant_pr_project_form_submit($form, &$form_state) {
   // Does this next line return an object - from a form?? Apparently...
   $entity = $form_state['values']['brilliant_pr_project_entity'];
   $entity->title = $form_state['values']['title'];
-  $entity->editor = $form_state['values']['editor'];
   $entity->description = $form_state['values']['description'];
   $field_key_cur = $form_state['values']['curator'];
   $result_curator = $form['curator']['#options'][$field_key_cur];
@@ -2228,7 +2210,6 @@ function  brilliant_pr_project_save_create_task($form, &$form_state) {
   $entity->title = $form_state['values']['title'];
 //  $entity->ref = $form_state['values']['ref'];
   $entity->description = $form_state['values']['description'];
-  $entity->editor = $form_state['values']['editor'];
   $field_key_cur = $form_state['values']['curator'];
   $result_curator = $form['curator']['#options'][$field_key_cur];
   $username_curator = get_user_curator($result_curator);
@@ -2516,7 +2497,6 @@ function brilliant_pr_task_form_submit($form, &$form_state) {
   // Does this next line return an object - from a form?? Apparently...
   $entity = $form_state['values']['brilliant_pr_task_entity'];
   $entity->title = $form_state['values']['title'];
-  $entity->editor = $form_state['values']['editor'];
 //  insert project #ID to db instead title
   $entities = brilliant_pr_project_load_multiple();
   foreach ($entities as $project) {
@@ -2896,7 +2876,6 @@ class EntityBrilliantProjectBasicController
     $entity->pid = 0;
     $entity->bundle_type = 'brilliant_pr_project_bundle';
     $entity->title = '';
-    $entity->editor = '';
     $entity->description = '';
     $entity->opt_time = REQUEST_TIME;
     $entity->dead_time = REQUEST_TIME;
@@ -2995,7 +2974,6 @@ class EntityBrilliantTaskBasicController
     $entity->bundle_type = 'brilliant_pr_task_bundle';
     $entity->title = '';
     $entity->ref = '';
-    $entity->editor = '';
     $entity->description = '';
     $entity->opt_time = REQUEST_TIME;
     $entity->dead_time = REQUEST_TIME;
@@ -3084,71 +3062,6 @@ function brilliant_pr_user_view_alter(&$account, $view_mode, $langcode) {
   unset($account['summary']);
 }
 
-/**
- * GET PROJECTS STATS
- * @return string
- */
-
-function get_project_statistics() {
-  $result = '1';
-  return $result;
-}
-
-/**
- * GET TASKS STATS
- * @return string
- */
-
-
-function get_task_statistics() {
-  $result = '2';
-  return $result;
-}
-
-/**
- * GET LOGS
- * @return string
- */
-
-function get_logs() {
-  $result = '3';
-  return $result;
-}
-
-/**
- * DASHBOARD RESULT DATA
- * @return string
- */
-
-function brilliant_pr_project_dashboard_page() {
-  global $user;
-
-  $data = array(
-    'page' => array(
-      'name' => $user->name,
-      'project_stats' => get_project_statistics(),
-      'task_stats' => get_task_statistics(),
-      'log_stats' => get_logs(),
-    ),
-  );
-
-  $theme = 'brilliant_pr_dashboard';
-  if (in_array('curator', $user->roles)) {
-    $theme = 'brilliant_pr_dashboard_curator';
-  }
-  else {
-    if (in_array('customer', $user->roles)) {
-      $theme = 'brilliant_pr_dashboard_customer';
-    }
-    else {
-      if (in_array('implementor', $user->roles)) {
-        $theme = 'brilliant_pr_dashboard_implementor';
-      }
-    }
-  }
-
-  return theme($theme, $data);
-}
 
 
 
@@ -3328,9 +3241,6 @@ function brilliant_pr_form_alter(&$form, &$form_state, $form_id) {
     $form['dead_time']['#title'] = t('Deadline date/time');
     $form['dead_time']['#size'] = 25;
     $form['opt_time']['#size'] = 25;
-    $form['editor']['#title_display'] = 'invisible';
-    $form['editor']['#prefix'] = '<div style="display:none;">';
-    $form['editor']['#suffix'] = '</div>';
   }
   if ($form_id == 'brilliant_pr_task_form') {
     $form['submit']["#attributes"]['class'][] = 'btn-success';
@@ -3347,9 +3257,6 @@ function brilliant_pr_form_alter(&$form, &$form_state, $form_id) {
     $form['implementor']["#attributes"]['class'][] = 'selectpicker';
     $form['implementor']['#title_display'] = 'invisible';
     $form['implementor']['#title'] = t('Implementor');
-    $form['editor']['#title_display'] = 'invisible';
-    $form['editor']['#prefix'] = '<div style="display:none;">';
-    $form['editor']['#suffix'] = '</div>';
 
 
     $form['opt_time']['#title_display'] = 'invisible';

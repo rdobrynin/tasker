@@ -81,7 +81,7 @@ global $user;
 <!-- get company taxonomy-->
 
 
-<h1><?php print($page['name']);?></h1>
+<h1><?php print($page['username']);?></h1>
 
 
 <?php var_dump($page);?>
